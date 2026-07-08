@@ -1,0 +1,39 @@
+name: KDP Company Daily Work
+
+on:
+  schedule:
+    # 毎日 日本時間の朝5時30分 (UTCの20時30分) に自動出勤して仕事をする
+    - cron: '30 20 * * *'
+  workflow_dispatch: # 手動実行ボタン
+
+jobs:
+  run_kdp_company:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 1. オフィスの準備
+        uses: actions/checkout@v4
+
+      - name: 2. Pythonのセットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 3. 必要ツールのインストール
+        run: |
+          pip install "crewai[google-genai]"
+
+      - name: 4. KDPチームの業務実行
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python main.py
+
+      - name: 5. 成果物をオフィスに自動納品
+        run: |
+          git config --global user.name "KDP AI Employee"
+          git config --global user.email "kdp-ai-employee@example.com"
+          git add .
+          git commit -m "🤖 [KDPカンパニー] 本日の出版プロデュース・ノートを納品しました" || echo "変更なし"
+          git push
