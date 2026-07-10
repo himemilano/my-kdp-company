@@ -35,5 +35,5 @@ jobs:
         git config --local user.name "GitHub Action"
         git add -A
         # 今日動いたフェーズを日報のコミットメッセージにする
-        git commit -m "🤖 [AIチーム] 本日の業務完了。成果物および引き継ぎ帳をデスクに格納しました (${{ datetime }})" || echo "変更なし"
+        git commit -m "🤖 [AIチーム] 本日の業務完了。成果物および引き継ぎ帳をデスクに格納しました ($(date))" || echo "変更なし"
         git push
