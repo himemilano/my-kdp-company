@@ -167,7 +167,8 @@ project_crew = Crew(
     agents=[coo_pm, creator, marketer_qa],
     tasks=tasks,
     process=Process.sequential,
-    verbose=True
+    verbose=True,
+    max_rpm=10  # 🔥 Geminiの無料枠（15RPM）を絶対に超えないための安全ブレーキ
 )
 
 print(f"🤖 [自律システム] 稼働を開始します。現在のステータス: {state['status']}")
