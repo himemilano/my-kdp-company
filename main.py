@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from crewai import Agent, Crew, Process, Task
 
 # --- ⚙️ タイムゾーンと日付の設定 ---
+import datetime as dt
 jst = timezone(timedelta(hours=9))
 now = datetime.now(jst)
 current_date = now.strftime("%Y-%m-%d")
@@ -19,9 +20,9 @@ def load_state():
             return json.load(f)
     return {
         "current_project_id": None,
-        "platform": None, # "KDP" or "Etsy"
+        "platform": None,
         "title": "未定",
-        "status": "START_NEW_PROJECT", # 進行ステータス
+        "status": "START_NEW_PROJECT",
         "current_page": 0,
         "target_pages": 40,
         "history": []
@@ -33,145 +34,144 @@ def save_state(state):
 
 state = load_state()
 
-# --- 👔 自律型AI組織の社員（エージェント）定義 ---
+# --- 👔 新・5人体制のAIプロ集団（エージェント定義） ---
 
 coo_pm = Agent(
     role="最高執行責任者 (COO) 兼 プロジェクトマネージャー",
-    goal="1つのデジタルコンテンツ（KDP/Etsy）を企画から完成・出版まで数日かけてでも1ミリの妥協なく完遂する",
-    backstory=(
-        "ナラティブ、スケジュール、品質を統括する冷徹かつ情熱的なリーダー。"
-        "現在のプロジェクト進捗状況（ステート）を厳格に分析し、本日チームが集中すべき『最も重要な実務』を定義します。"
-        "前回の成果をレビューし、出版ガイドラインをクリアするまで次のプロジェクトへの移行を絶対に許可しません。"
-    ),
+    goal="1つのデジタルコンテンツを企画から出版まで数日かけてでも1ミリの妥協なく完遂する",
+    backstory="現在のプロジェクト進捗状況（ステート）を厳格に分析し、本日チームが集中すべき最も重要な実務を定義・指揮する冷徹なリーダー。",
     verbose=True,
     llm="gemini/gemini-2.5-flash",
 )
 
 creator = Agent(
-    role="制作ディレクター 兼 AIプロンプトデザイナー",
-    goal="プロジェクトのテーマに沿った、完全オリジナルで著作権クリーンな高品質コンテンツ（線画・文章）を制作する",
-    backstory=(
-        "伝統的な和モダン、知育、絵本など、あらゆるジャンルの構造（サイズ、余白、解像度）を熟知したクリエイター。"
-        "KDPなら【8.625 x 11.25 inch with bleed, 300 DPI】等の実務規格をプロンプトに完璧に落とし込み、日々ページを積み上げます。"
-    ),
+    role="AIプロンプトエンジニア 兼 ジュニアクリエイティブ",
+    goal="画像生成AIの専門知識を活かし、他者の権利を侵さない完全クリーンで最高品質のプロンプトを設計する",
+    backstory="AI画像生成の専門家。塗り絵の極細線、絵本のタッチなど、ビジュアルを呪文（プロンプト）に落とし込む実務に特化したクリエイター。",
+    verbose=True,
+    llm="gemini/gemini-2.5-flash",
+)
+
+dtp_layout_specialist = Agent(
+    role="DTP 兼 レイアウトスペシャリスト",
+    goal="KDP/Etsyの厳格な技術的要件（サイズ、解像度、裁ち落とし）を完璧に監査し、品質保証する",
+    backstory="印刷・出版フォーマットの神様。プロンプト末尾の『8.625 x 11.25 inch with bleed, 300 DPI』等の技術要件が厳密に守られているかをミリ単位でチェックする専門職。",
+    verbose=True,
+    llm="gemini/gemini-2.5-flash",
+)
+
+native_copywriter = Agent(
+    role="英語ネイティブ編集 兼 SEOコピーライター",
+    goal="海外のターゲット層に響く完璧な英語表現と、検索上位表示（SEO）を最大化するマーケティングコピーを作る",
+    backstory="英語ネイティブの言葉の魔術師。KDPのSEOメタデータ（タイトル、キーワード）や、読者エンゲージメントを最大化する商品説明文を専門に執筆する。",
     verbose=True,
     llm="gemini/gemini-2.5-flash",
 )
 
 marketer_qa = Agent(
-    role="マーケティング 兼 品質保証（QA）ディレクター",
-    goal="成果物のリーガルチェック、KDP/EtsyのSEOメタデータ作成、およびプロジェクト完了時の組織改善案を練る",
-    backstory=(
-        "AmazonやEtsyの規約、商標権、ホワイトハットSEOの権威。成果物の品質を厳しくチェックします。"
-        "プロジェクト完了時には、組織のパフォーマンスを振り返り、『次回よりステップアップするために、どんな新社員（専門エージェント）を雇うべきか』を自律的に考案します。"
-    ),
+    role="リーガル 兼 品質保証（QA）最高責任者",
+    goal="成果物の著作権・商標権検閲、およびプロジェクト完了時のさらなる組織改善案（KAIZEN）を統括する",
+    backstory="Amazon/Etsyの規約、知財コンサルティングの権威。チーム全体の成果物を最終検閲し、一発審査通過を保証する砦。",
     verbose=True,
     llm="gemini/gemini-2.5-flash",
 )
 
-# --- 🧭 プロジェクトの状態に応じたタスクの動的生成 ---
 
+# --- 🧭 プロジェクトの状態に応じたプロ業務の割り当て ---
 tasks = []
 
 if state["status"] == "START_NEW_PROJECT":
-    # 🚀 フェーズ1：新しいプロジェクトの立ち上げ
-    print("🆕 [組織の判断] 現在進行中のプロジェクトがありません。新しいプロジェクトを企画・選定します。")
-    
+    print("🆕 [5人体制始動] 新しいプロジェクトを自律的に立ち上げます。")
     task1 = Task(
-        description=(
-            "Amazonで現在実際に売れているトレンド（日本の道徳教育の概念を取り入れた海外向け絵本、幼児用はさみ練習帳、大人のミニマル植物塗り絵など）"
-            "またはEtsyで爆売れしている和モダン物販から、今回【数日間かけて総力を挙げて完成させる1つの大物プロジェクト】を自律的に厳選し、仕様（総ページ数、ターゲット、プラットフォーム）を決定してください。"
-        ),
-        expected_output="選定したプロジェクトの完全な企画書、ターゲット層、および完成までのマイルストーン計画",
-        agent=coo_pm,
+        description="現在売れ筋のトレンドから、今回総力を挙げて完成させる1つの大物プロジェクトを厳選し、マイルストーン計画を立ててください。",
+        expected_output="プロジェクト企画書", agent=coo_pm
     )
     task2 = Task(
-        description="決定したプロジェクトの核となる、表紙（またはメインデザイン）の完全著作権クリーンな画像生成プロンプトと、本の基本構成案を作成してください。KDPの場合は【8.625 x 11.25 inch vertical layout with bleed, 300 DPI print-ready resolution】を厳守すること。",
-        expected_output="表紙用プロンプトと、全体の章立て・構成案テキスト",
-        agent=creator,
+        description="企画の核となる表紙デザインおよび中身の基本構成案のAIプロンプトの初稿を作成してください。",
+        expected_output="プロンプト初稿", agent=creator
     )
     task3 = Task(
-        description="この新プロジェクトの市場優位性を検証し、SEOに強いタイトル候補、初期のキーワードタグを考案してください。",
-        expected_output="プロジェクト立ち上げ用マーケティングレポート",
-        agent=marketer_qa,
+        description="作成された企画とプロンプトが、KDP等の規格（8.625 x 11.25 inch with bleed, 300 DPI）を満たしているかレイアウト監査を行ってください。",
+        expected_output="DTP技術要件クリアの承認", agent=dtp_layout_specialist
     )
-    tasks = [task1, task2, task3]
+    task4 = Task(
+        description="この新プロジェクトの初期SEOキーワードタグと、魅力的な仮タイトルを英語ネイティブ視点で考案してください。",
+        expected_output="初期SEO・タイトル提案", agent=native_copywriter
+    )
+    task5 = Task(
+        description="知的財産権の侵害がないかリーガルチェックを行い、プロジェクトの開始を承認してください。",
+        expected_output="リーガル承認ログ", agent=marketer_qa
+    )
+    tasks = [task1, task2, task3, task4, task5]
     
-    # 状態の更新予測（実行後に手動またはプログラムでフェーズを進める）
     state["status"] = "IN_PROGRESS"
     state["title"] = f"Project_{current_date}"
     state["current_page"] = 1
-    state["target_pages"] = 40 # 企画に合わせて自動変動
+    state["target_pages"] = 40
 
 elif state["status"] == "IN_PROGRESS":
-    # ⚙️ フェーズ2：プロジェクトの継続・ページの量産
     p_title = state["title"]
     curr = state["current_page"]
     target = state["target_pages"]
-    print(f"⏳ [組織の判断] プロジェクト『{p_title}』を継続中。現在 {curr} / {target} ページ目を制作します。完遂するまで次には行きません。")
+    print(f"⏳ [5人体制進行] プロジェクト『{p_title}』の {curr} / {target} ページ目を専門職の連携で制作します。")
     
     task1 = Task(
-        description=f"現在進行中のプロジェクト『{p_title}』の進捗（{curr}/{target}ページ目）を確認し、本日制作すべき具体的なページ内容（例：植物塗り絵なら特定の和の植物3種、はさみ練習帳なら難易度ステップに沿った図形）の指示書を出してください。",
-        expected_output="本日の制作ターゲットに関する具体的な演出・構造の指示",
-        agent=coo_pm,
+        description=f"プロジェクト『{p_title}』の進捗に基づき、本日制作すべき具体的なページ内容の指示を出してください。",
+        expected_output="本日の制作指示書", agent=coo_pm
     )
     task2 = Task(
-        description="PMの指示に基づき、本日分の画像生成用英語プロンプト（サイズ・裁ち落とし・300DPIの呪文入り）を完全に著作権クリーンな形で作成してください。",
-        expected_output="本日進めるページ分（3〜5ページ分）の完全な英語プロンプト一覧",
-        agent=creator,
+        description="PMの指示に基づき、本日分の画像生成用英語プロンプトの高品質な呪文を設計してください。",
+        expected_output="本日分のプロンプト初稿", agent=creator
     )
     task3 = Task(
-        description="本日制作したプロンプトのクオリティをチェックし、Amazon/Etsyの規約違反（他者の商標侵害など）がないか厳格に検閲してください。",
-        expected_output="リーガル＆クオリティ通過の承認ログ",
-        agent=marketer_qa,
+        description="本日分のプロンプトに必ず『8.625 x 11.25 inch vertical layout with bleed, 300 DPI print-ready resolution』が組み込まれ、余白の美（ミニマリズム）が担保されているか技術検証・修正してください。",
+        expected_output="レイアウト最適化済みのプロンプト一覧", agent=dtp_layout_specialist
     )
-    tasks = [task1, task2, task3]
+    task4 = Task(
+        description="完成したプロンプトに商標侵害などの法的リスクがないか厳格に検閲してください。",
+        expected_output="リーガル＆クオリティ通過の承認ログ", agent=marketer_qa
+    )
+    tasks = [task1, task2, task3, task4]
     
-    # ページを進める
     state["current_page"] += 3
     if state["current_page"] >= state["target_pages"]:
         state["status"] = "FINAL_REVIEW"
 
 elif state["status"] == "FINAL_REVIEW":
-    # 🏁 フェーズ3：最終チェック ＆ メタデータ完全作成 ＆ 自律組織改善会
     p_title = state["title"]
-    print(f"🎉 [組織の判断] 『{p_title}』の全素材が揃いました！最終出版メンテ、および組織の『自律改善・新社員スカウト会議』を行います。")
+    print(f"🎉 [5人体制最終章] 『{p_title}』の最終出版パッケージ化、および自律組織改善会を行います。")
     
     task1 = Task(
-        description=f"プロジェクト『{p_title}』の全成果物（中身・表紙プロンプトなど）を総括し、Amazon KDP（またはEtsy）に今すぐ登録できる最終出版パッケージとして構成を固定してください。",
-        expected_output="出版直前状態の、非の打ち所がない完全な1冊の構成台帳",
-        agent=coo_pm,
+        description=f"プロジェクト『{p_title}』の全成果物を総括し、固定された最終出版台帳を構成してください。",
+        expected_output="最終出版パッケージ台帳", agent=coo_pm
     )
     task2 = Task(
-        description="この作品が海外で爆売れするための、Amazonガイドライン完全準拠の説明文（英語）、隠れた検索キーワード7つ、表紙計算ツール用のアドバイスを完成させてください。",
-        expected_output="完全なKDP/Etsy登録用SEOテキスト",
-        agent=creator,
+        description="Amazonガイドラインに完全準拠し、ターゲットに刺さる完璧な英語の商品説明文と、厳選された検索キーワード7つを完成させてください。",
+        expected_output="ネイティブSEOテキスト一式", agent=native_copywriter
     )
     task3 = Task(
-        description=(
-            "【最重要・自律進化タスク】今回のプロジェクト全体の組織パフォーマンス（進行速度、クオリティのブレ、規約上の課題など）を徹底的に振り返り、"
-            "『次回プロジェクトからさらにステップアップするために、チームに新しく雇用すべき【新社員（専門AIエージェント）】の役割』を自律的に定義してください。"
-            "（例：英文校正専門のネイティブエージェント、余白の比率を厳密にチェックするレイアウト監査AI、など）"
-        ),
-        expected_output="次回に向けた組織改善提案書（新社員の採用・役割定義を含むKAIZENノート）",
-        agent=marketer_qa,
+        description="本の総ページ数から『表紙計算ツール・背幅計算』に必要な技術的数値（リマインド情報）を出力してください。",
+        expected_output="DTP最終確認データ", agent=dtp_layout_specialist
     )
-    tasks = [task1, task2, task3]
+    task4 = Task(
+        description="今回の5人体制での稼働パフォーマンスを振り返り、次回さらに売上を伸ばすための『KDP/Etsy専任デジタルマーケター』の採用計画など、次なる組織改善提案（KAIZENノート）をまとめてください。",
+        expected_output="組織改善提案書（KAIZENノート）", agent=marketer_qa
+    )
+    tasks = [task1, task2, task3, task4]
     
-    # プロジェクト完了、次回は新しいプロジェクトへ
     state["status"] = "START_NEW_PROJECT"
     state["history"].append({"project": p_title, "completed_at": current_date})
 
-# --- 🚀 実行セクション ---
+# --- 🚀 実行セクション（5人全員が出勤） ---
 project_crew = Crew(
-    agents=[coo_pm, creator, marketer_qa],
+    agents=[coo_pm, creator, dtp_layout_specialist, native_copywriter, marketer_qa], # 🔥 新社員2名を含む全員が着席
     tasks=tasks,
     process=Process.sequential,
     verbose=True,
-    max_rpm=10  # 🔥 Geminiの無料枠（15RPM）を絶対に超えないための安全ブレーキ
+    max_rpm=10 # 🔥 Gemini無料枠の安全ブレーキ
 )
 
-print(f"🤖 [自律システム] 稼働を開始します。現在のステータス: {state['status']}")
+print(f"🤖 [自律システム] 5人体制で稼働を開始します。現在のステータス: {state['status']}")
 result = project_crew.kickoff()
 
 # 成果物の保存
@@ -182,6 +182,5 @@ report_file = f"{project_folder}/{current_date}_{state['status']}_report.md"
 with open(report_file, "w", encoding="utf-8") as f:
     f.write(str(result))
 
-# 状態を保存して明日に引き継ぐ
 save_state(state)
-print(f"💾 [自律システム] 今日の実務が記録されました。進捗は明日のチームへ引き継がれます。成果物: {report_file}")
+print(f"💾 [自律システム] 業務完了。5人体制の成果がデスクに格納されました: {report_file}")
