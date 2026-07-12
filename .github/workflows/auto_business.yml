@@ -2,8 +2,8 @@ name: AI Company Daily Autonomous Operation
 
 on:
   schedule:
-    # 毎日 日本時間 9:30, 13:30, 16:30（UTC 1:30, 5:30, 8:30）に自動起動
-    - cron: '30 0,4,7 * * *'
+    # 毎日 日本時間 9:45, 13:45, 16:45（UTC 1:45, 5:45, 8:45）に自動起動
+    - cron: '45 0,4,7 * * *'
   workflow_dispatch: # 会長が好きな時に手動で「今すぐ動け」と命令できるボタンも残します
 
 jobs:
