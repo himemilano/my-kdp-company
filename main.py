@@ -1,8 +1,10 @@
 import os
 import json
-from datetime import datetime, timedelta, timezone
+import datetime from datetime, timedelta, timezone
 from crewai import Agent, Crew, Process, Task
+from langchain_google_genai import ChatGoogleGenerativeAI  # 🔥 5行目にこれを追加！
 
+# --- ⚙️ タイムゾーンと日付の設定 ---
 # --- ⚙️ タイムゾーンと日付の設定 ---
 import datetime as dt
 jst = timezone(timedelta(hours=9))
