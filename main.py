@@ -2,9 +2,8 @@ import os
 import json
 from datetime import datetime, timedelta, timezone
 import datetime as dt
-from crewai import Agent, Crew, Process, Task
-# 🔥 LangChain の Gemini クライアントを明示的にインポート
-from langchain_google_genai import ChatGoogleGenerativeAI
+# 🔥 LangChainを捨て、CrewAIネイティブの LLM クラスをインポート
+from crewai import Agent, Crew, Process, Task, LLM
 
 # --- ⚙️ タイムゾーンと日付の設定 ---
 jst = timezone(timedelta(hours=9))
@@ -37,25 +36,22 @@ def save_state(state):
 state = load_state()
 
 
-# --- 🛡️ Gemini LLM の明示的定義（無料枠防衛・要塞化） ---
-# 429エラー（リクエスト超過）を検知すると、自動で最大15回まで粘り強くリトライを繰り返します。
-gemini_llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
-    max_retries=15,        # 🔥 429エラー検知時のリトライ回数を「15回」に強化（20秒の壁を自動で超える）
-    temperature=0.3,       # ぬりえの構成案やDTP寸法の正確性を高める設定
+# --- 🛡️ CrewAI公式ネイティブ LLM 定義（Pydanticエラー完全回避型） ---
+# モデル名に `gemini/` 接頭辞をつけることで、内部のLiteLLM機構が安全かつ最適に自動リトライを制御します。
+gemini_llm = LLM(
+    model="gemini/gemini-2.5-flash",
+    temperature=0.3,
 )
 
 
 # --- 👔 新・5人体制のAIプロ集団（エージェント定義） ---
-# 5人全員に最強シールド（gemini_llm）を配備し、個別の稼働速度を厳しく制限します。
-
 coo_pm = Agent(
     role="最高執行責任者 (COO) 兼 プロジェクトマネージャー",
     goal="1つのデジタルコンテンツを企画から出版まで数日かけてでも1ミリの妥協なく完遂する",
     backstory="現在のプロジェクト進捗状況（ステート）を厳格に分析し、本日チームが集中すべき最も重要な実務を定義・指揮する冷徹なリーダー。",
     verbose=True,
-    llm=gemini_llm,        # 🔓 シールドLLMをセット
-    max_rpm=3,             # 🔥 個別リクエスト数を1分間3回に厳格化
+    llm=gemini_llm,        # 🔓 エラーの出ないネイティブLLMをセット
+    max_rpm=3,             # 個別リクエスト数を1分間3回に制限
 )
 
 creator = Agent(
@@ -63,8 +59,8 @@ creator = Agent(
     goal="画像生成AIの専門知識を活かし、他者の権利を侵さない完全クリーンで最高品質のプロンプトを設計する",
     backstory="AI画像生成の専門家。塗り絵の極細線、絵本のタッチなど、ビジュアルを呪文（プロンプト）に落とし込む実務に特化したクリエイター。",
     verbose=True,
-    llm=gemini_llm,        # 🔓 シールドLLMをセット
-    max_rpm=3,             # 🔥 個別リクエスト数を1分間3回に厳格化
+    llm=gemini_llm,        # 🔓 エラーの出ないネイティブLLMをセット
+    max_rpm=3,             # 個別リクエスト数を1分間3回に制限
 )
 
 dtp_layout_specialist = Agent(
@@ -72,8 +68,8 @@ dtp_layout_specialist = Agent(
     goal="KDP/Etsyの厳格な技術的要件（サイズ、解像度、裁ち落とし）を完璧に監査し、品質保証する",
     backstory="印刷・出版フォーマットの神様。プロンプト末尾の『8.625 x 11.25 inch with bleed, 300 DPI』等の技術要件が厳密に守られているかをミリ単位でチェックする専門職。",
     verbose=True,
-    llm=gemini_llm,        # 🔓 シールドLLMをセット
-    max_rpm=3,             # 🔥 個別リクエスト数を1分間3回に厳格化
+    llm=gemini_llm,        # 🔓 エラーの出ないネイティブLLMをセット
+    max_rpm=3,             # 個別リクエスト数を1分間3回に制限
 )
 
 native_copywriter = Agent(
@@ -81,8 +77,8 @@ native_copywriter = Agent(
     goal="海外のターゲット層に響く完璧な英語表現と、検索上位表示（SEO）を最大化するマーケティングコピーを作る",
     backstory="英語ネイティブの言葉の魔術師。KDPのSEOメタデータ（タイトル、キーワード）や、読者エンゲージメントを最大化する商品説明文を専門に執筆する。",
     verbose=True,
-    llm=gemini_llm,        # 🔓 シールドLLMをセット
-    max_rpm=3,             # 🔥 個別リクエスト数を1分間3回に厳格化
+    llm=gemini_llm,        # 🔓 エラーの出ないネイティブLLMをセット
+    max_rpm=3,             # 個別リクエスト数を1分間3回に制限
 )
 
 marketer_qa = Agent(
@@ -90,8 +86,8 @@ marketer_qa = Agent(
     goal="成果物の著作権・商標権検閲、およびプロジェクト完了時のさらなる組織改善案（KAIZEN）を統括する",
     backstory="Amazon/Etsyの規約、知財コンサルティングの権威。チーム全体の成果物を最終検閲し、一発審査通過を保証する砦。",
     verbose=True,
-    llm=gemini_llm,        # 🔓 シールドLLMをセット
-    max_rpm=3,             # 🔥 個別リクエスト数を1分間3回に厳格化
+    llm=gemini_llm,        # 🔓 エラーの出ないネイティブLLMをセット
+    max_rpm=3,             # 個別リクエスト数を1分間3回に制限
 )
 
 
@@ -182,11 +178,11 @@ elif state["status"] == "FINAL_REVIEW":
 
 # --- 🚀 実行セクション（5人全員が出勤） ---
 project_crew = Crew(
-    agents=[coo_pm, creator, dtp_layout_specialist, native_copywriter, marketer_qa], # 新社員2名を含む全員が着席
+    agents=[coo_pm, creator, dtp_layout_specialist, native_copywriter, marketer_qa],
     tasks=tasks,
     process=Process.sequential,
     verbose=True,
-    max_rpm=4  # 🔥 クルー全体での1分間リクエスト数を4回に制限。これで同時パンクのリスクを完全にゼロにします。
+    max_rpm=4  # クルー全体での1分間リクエスト数を4回に制限（無料枠を絶対に踏まない安全ブレーキ）
 )
 
 print(f"🤖 [自律システム] 5人体制で稼働を開始します。現在のステータス: {state['status']}")
