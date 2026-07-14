@@ -1,14 +1,17 @@
-name: AI Company Daily Autonomous Operation
+name: 📚 KDP Publisher Limitless Loop
 
 on:
   schedule:
-    # 毎日 日本時間 9:45, 13:45, 16:45（UTC 1:45, 5:45, 8:45）に自動起動
-    - cron: '45 0,4,7 * * *'
-  workflow_dispatch: # 会長が好きな時に手動で「今すぐ動け」と命令できるボタンも残します
+    - cron: '0 * * * *' # 毎時0分に起動して常時コンテナを稼働
+  workflow_dispatch: # 手動即時起動ボタン
+
+permissions:
+  contents: write # 生成された小説などの成果物をGitHubへ自動コミット・プッシュする権限
 
 jobs:
-  run-ai-organization:
+  run-kdp-limitless:
     runs-on: ubuntu-latest
+    timeout-minutes: 350 # 最大約6時間のコンテナ維持限界
 
     steps:
     - name: Checkout Repository
@@ -22,18 +25,13 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install crewai langchain-google-genai requests
+        pip install requests
 
-    - name: Run AI Company Operations
+    # 🚀 トップ階層の常時自律ループランナーを起動
+    - name: Run KDP Autonomy Loop
       env:
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      run: python main.py
-
-    - name: Commit and Push Daily Progress
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_FX }}
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add -A
-        # 今日動いたフェーズを日報のコミットメッセージにする
-        git commit -m "🤖 [AIチーム] 本日の業務完了。成果物および引き継ぎ帳をデスクに格納しました ($(date))" || echo "変更なし"
-        git push
+        echo "=== 📚 KDP自律稼働ハイパードライブ 起動 ==="
+        python kdp_loop_runner.py
+
