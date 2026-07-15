@@ -1,47 +1,54 @@
-## リーガル＆クオリティ通過の承認ログ
+リーガル＆クオリティ通過の承認ログ
 
-### 承認日: 2023年10月27日
-### 承認者: リーガル 兼 品質保証（QA）最高責任者
+プロジェクト『Project_2026-07-16』の画像生成用英語プロンプトについて、リーガルおよび品質保証の観点から厳格な検閲を実施いたしました。
 
----
+**検閲結果:**
+提示された全てのプロンプトは、特定のブランド名、製品名、キャラクター名、ロゴ、スローガン、または既存の著作物（映画、アニメ、ゲーム、漫画、絵本など）の具体的な描写を想起させる表現を含んでおりません。また、特定の人物を想起させるような描写もなく、差別的表現や公序良俗に反する内容も一切認められません。
 
-### 【検閲結果】
+「絵本のタッチ」や「children's book style」といったスタイル指定は、特定の著作物を直接的に模倣するものではなく、一般的なイラストレーションジャンルを指すものとして問題ありません。描写内容も抽象的かつ普遍的なテーマに留まっており、商標権、著作権、パブリシティ権、その他の法的リスクを侵害する可能性は極めて低いと判断いたします。
 
-プロジェクト『Project_2026-07-16』のトップページ（Home Page）ヒーローセクション用画像生成プロンプト3案について、商標権、著作権、パブリシティ権、不正競争防止法などの法的リスクがないか、厳格な検閲を実施いたしました。
+DTP兼レイアウトスペシャリストによる技術要件（サイズ、解像度、裁ち落とし）の組み込みも確認し、KDP/Etsyの厳格な技術的要件を満たしていることを確認いたしました。
 
-**対象プロンプト:**
-1.  プロンプト案 1：AIと人間の協働を強調した、洗練された未来感
-2.  プロンプト案 2：データフローを強調した、より抽象的でダイナミックな表現
-3.  プロンプト案 3：両方の要素をバランス良く取り入れ、信頼感を前面に
-
-**法的リスク評価:**
-
-*   **商標権侵害:**
-    *   提示されたプロンプトには、特定の企業名、製品名、ブランド名、ロゴ、スローガン、またはそれらを想起させるような固有名詞やデザイン要素の指示は一切含まれておりません。抽象的な概念（AI、データフロー、協働、未来、信頼性など）や一般的なデザイン要素（幾何学模様、光、線、シルエットなど）、色彩、品質に関する指示に終始しています。したがって、商標権を直接的に侵害するリスクは極めて低いと判断いたします。
-*   **著作権侵害:**
-    *   プロンプトは「Abstract digital art」「Futuristic abstract concept art」「Sleek and sophisticated digital concept art」といった一般的なアートスタイルや表現技法を指示しており、特定の既存の芸術作品、キャラクター、映画、ゲーム、アニメ、写真などの著作物を模倣するような具体的な指示は含まれておりません。また、「minimalist human silhouette」「glowing data sphere」なども一般的な表現であり、特定の著作物を侵害する可能性は低いと判断いたします。
-*   **パブリシティ権・肖像権侵害:**
-    *   ネガティブプロンプトにおいて「people, faces」が明確に排除されており、「minimalist human silhouette」も特定の個人を特定できるものではないため、パブリシティ権や肖像権を侵害するリスクは認められません。
-*   **不正競争防止法:**
-    *   他社の製品やサービスと誤認混同を招くような表現は、プロンプトの性質上、含まれておりません。
-
-**総合判断:**
-
-上記検閲の結果、提示された画像生成用プロンプト3案は、現時点において、商標権、著作権、パブリシティ権、不正競争防止法などの法的権利を直接的に侵害するリスクは認められません。プロジェクトの要件に沿った、抽象的かつ一般的な表現で構成されており、法的な問題なく画像生成に利用可能であると承認いたします。
-
-### 【留意事項】
-
-*   **生成画像の最終確認:** プロンプト自体に法的リスクがないと判断された場合でも、AIが生成する画像が意図せず既存の著作物や商標に酷似してしまう可能性はゼロではありません。そのため、実際に生成された画像については、最終的な公開前に必ず目視による厳重な確認を行い、万が一のリスクがないことを確認してください。特に、ロゴ、テキスト、特定のキャラクターやデザイン要素が意図せず含まれていないか、細心の注意を払う必要があります。
-*   **プロジェクト名の商標登録検討:** 「Project_2026-07-16」というプロジェクト名自体は現時点では一般的な日付と番号の組み合わせであり、法的リスクは低いですが、将来的にこの名称をブランド名として使用し、商標登録を検討する際には、既存の商標との類似性を事前に調査し、適切な手続きを行うことを推奨いたします。
+よって、本プロンプトはリーガルおよび品質基準をクリアし、承認いたします。このまま次の工程に進めてください。
 
 ---
 
-### 【KAIZEN（組織改善案）について】
+## プロジェクト『Project_2026-07-16』 レイアウト最適化済みのプロンプト一覧
 
-本タスクは個別の成果物（画像生成プロンプト）に対する法的検閲であり、プロジェクト全体の完了には至っておりません。したがって、プロジェクト完了時に統括すべき組織改善案（KAIZEN）については、本プロジェクトの全工程が終了し、その成果と課題が明確になった段階で改めて提案させていただきます。
+PMの指示に基づき、各ページのキービジュアルおよび図解の方向性を踏まえ、高品質な画像生成用英語プロンプトを設計しました。他者の権利を侵さない完全クリーンな内容を前提とし、絵本のタッチやクリーンなイラストレーションスタイルを基調としています。
+
+---
+
+### 1. ページ名: 導入 (Introduction) - キービジュアルの方向性
+
+**コンセプト:** 読者が抱える課題（複雑さ、迷い）と、本コンテンツが提供する解決策（明確さ、道筋、希望）を対比的に表現し、読者の関心を引きつけ、読み進める動機付けとなるようなビジュアル。
+
+**英語プロンプト:**
+
+```
+A split-screen storybook illustration. On the left side, a person stands in a dark, intricate maze, looking confused and overwhelmed, surrounded by tangled paths and question marks. The colors are muted and slightly desaturated. On the right side, the same person is smiling, confidently walking on a clear, straight path that leads out of the maze towards a bright, open horizon with a rising sun. The colors are vibrant and hopeful. The overall style is clean line art, minimalist, vector art, children's book illustration, soft pastel colors, inviting atmosphere. The final image must be a vertical layout of 8.625 x 11.25 inches with bleed, at 300 DPI print-ready resolution.
+```
 
 ---
 
-**リーガル＆クオリティ通過を承認します。**
+### 2. ページ名: メインテーマの核心 (Core Theme - 最も重要なセクション) - 図解・グラフの必要性
+
+**コンセプト:** 複雑な解決策やステップバイステップのガイドを、視覚的に分かりやすく、かつ魅力的なインフォグラフィック風イラストで表現。読者が「なるほど」と納得し、行動に移せるレベルの情報提供を補完する。
+
+**英語プロンプト:**
+
+```
+A clean, minimalist infographic illustration in a storybook style, depicting a 4-step sequential process or journey. Each step is represented by a distinct, simple, and friendly icon (e.g., a lightbulb for 'idea', a gear for 'process', a growing plant for 'growth', a star for 'achievement'). Smooth, flowing arrows connect the steps, guiding the viewer's eye. The background is subtle and clean. Soft pastel colors, vector art, clean line art, easy to understand, children's book illustration, clear visual hierarchy. The final image must be a vertical layout of 8.625 x 11.25 inches with bleed, at 300 DPI print-ready resolution.
+```
 
 ---
+
+### 3. ページ名: まとめと行動喚起 (Conclusion & Call to Action - CTA) - 読者への最終メッセージを象徴するビジュアル
+
+**コンセプト:** コンテンツを読み終えた読者が、自信を持って次のステップに進めるような、ポジティブで行動を促すイメージ。達成感や未来への期待を表現し、CTAへの誘導を自然に促す。
+
+**英語プロンプト:**
+
+```
+A hopeful and encouraging storybook illustration showing a person confidently stepping through an open, brightly lit doorway into a new, promising world. The path ahead is clear and inviting, leading towards a beautiful, serene landscape under a warm, glowing sky. The person has a determined yet joyful expression. Soft, inviting pastel colors, clean line art, minimalist design, vector art, children's book style, symbolizing new beginnings and positive action. The final image must be a vertical layout of 8.625 x 11.25 inches with bleed, at 300 DPI print-ready resolution.
+```
