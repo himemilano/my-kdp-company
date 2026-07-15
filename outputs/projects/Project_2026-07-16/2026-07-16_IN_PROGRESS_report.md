@@ -1,59 +1,67 @@
-## リーガル＆クオリティ通過の承認ログ
+**リーガル＆クオリティ通過の承認ログ**
 
-### 承認日: 2023年10月27日
-### 検閲者: リーガル 兼 品質保証（QA）最高責任者
+**件名:** プロンプト初稿（メインサービス/プロダクト詳細ページ ヒーローセクション用）の法的リスク検閲結果
 
----
+**日付:** 2024年7月16日
 
-### 検閲結果
+**検閲対象:**
+*   コンセプト1：ビジネス効率化とデータインテリジェンス
+*   コンセプト2：抽象的なテクノロジーとイノベーション
+*   コンセプト3：個人ユーザーの成長と新しい体験
 
-提示された画像生成用英語プロンプト群について、著作権、商標権、およびその他の法的リスクの観点から厳格な検閲を実施いたしました。
-
-**結論として、全てのプロンプトは当社の定める法的基準および品質基準を満たしており、いかなる商標侵害、著作権侵害、またはその他の法的リスクに抵触する可能性のある表現は含まれていないことを確認いたしました。**
-
-プロンプトは、一般的なアートスタイル（Coloring book style illustration, Storybook illustration, vector art）と普遍的な概念（情報過多、集中、タ罠、道など）を用いており、特定の既存キャラクター、ブランド、または著作物を想起させる要素は一切ありません。また、生成される画像が差別的、攻撃的、または不法行為を助長する内容となるリスクも認められません。
-
-DTP兼レイアウトスペシャリストによる技術的要件（サイズ、解像度、裁ち落とし、余白の美）の最適化も確認し、高品質な成果物生成に寄与すると判断いたします。
-
-よって、本プロンプト群はリーガル＆クオリティ部門の承認を得て、次工程へ進むことを許可します。
-
----
-
-### レイアウト最適化済みのプロンプト一覧（承認済みコンテンツ）
-
-### Project_2026-07-16: 最速で成果を出すための「超集中」ワークフロー実践ガイド
-
-#### タスク1: コンテンツ全体構成案（目次ページ）用画像プロンプト
-
-**コンセプト:** 複雑なデジタル世界から抜け出し、整理された道筋を見つけるイメージ。ガイドが提供する「超集中」ワークフローの全体像を、体系的かつ希望に満ちた形で表現します。
-
-**英語プロンプト:**
-```
-Coloring book style illustration, ultra-fine lines, minimalist, clean lines. Vertical layout, portrait orientation, designed for an 8.625 x 11.25 inch book page with bleed, 300 DPI print-ready resolution. A person stands at the beginning of a clear, well-organized path that branches into several distinct, labeled sections, symbolizing a structured workflow guide. The background subtly transitions from a chaotic, blurry digital landscape (representing information overload) on one side, to a calm, clear, and focused environment on the other. Main subject centrally composed with ample negative space around, allowing for bleed and clean margins. Soft pastel colors, simple background, vector art, clean vector graphics. Storybook illustration, no complex shading, no text.
-```
+**検閲基準:**
+*   商標権侵害の有無（特定のブランド名、製品名、ロゴ、キャラクター名の使用）
+*   著作権侵害の有無（既存の著作物、アートワーク、デザインの直接的な模倣指示）
+*   肖像権・パブリシティ権侵害の有無（特定の個人、有名人を想起させる描写）
+*   Amazon/Etsy等のプラットフォーム規約への適合性
+*   公序良俗に反する表現の有無
 
 ---
 
-#### タスク2: 導入ページ（プロローグ）用画像プロンプト
+**検閲結果:**
 
-**コンセプト:** 読者の抱える課題（情報過多、集中力散漫）と、本ガイドが提供する解決策（集中、生産性向上、平穏）を対比的に表現し、期待感を高めます。
+上記3つのプロンプトについて、厳格な法的リスク検閲を実施しました。
 
-**英語プロンプト:**
-```
-Coloring book style illustration, ultra-fine lines, minimalist, clean lines. Vertical layout, portrait orientation, designed for an 8.625 x 11.25 inch book page with bleed, 300 DPI print-ready resolution. A split image or a clear visual transition. On the left side, a person is overwhelmed by a storm of digital notifications, emails, and chat bubbles, looking stressed and scattered amidst a cluttered environment. On the right side, the same person is calmly and deeply focused on a single task at a clean, minimalist desk, surrounded by a serene, clear aura, symbolizing 'hyperfocus' and productivity. A subtle, hopeful path or bridge connects these two contrasting states. Composition allows for clear separation of elements with sufficient negative space, suitable for print margins. Soft pastel colors, simple background, vector art, clean vector graphics. Storybook illustration, no complex shading, no text.
-```
+1.  **商標権侵害:** いずれのプロンプトも、特定の企業名、製品名、ブランド名、ロゴ、またはそれらを直接的に想起させる固有名詞やデザイン要素の指示は含まれていません。
+2.  **著作権侵害:** 既存の著作物（絵画、写真、映画、アニメ、ゲームなど）の具体的な描写や、特定の著作権で保護されたアートワークの模倣を指示する表現は見当たりません。「抽象的な表現」「一般的な概念」「未来的なデザイン」といった指示に留まっており、著作権侵害のリスクは極めて低いと判断します。
+3.  **肖像権・パブリシティ権侵害:** 「diverse team of professionals」「young adult (diverse ethnicity, 20s-30s, gender-neutral appearance)」といった表現は、特定の個人を特定・想起させるものではなく、一般的な人物像の指示として適切です。肖像権・パブリシティ権侵害のリスクはありません。
+4.  **Amazon/Etsy等のプラットフォーム規約への適合性:** プロンプトの内容自体は、Amazon/Etsy等の主要なプラットフォームの出品規約に抵触する表現を含んでいません。
+5.  **公序良俗:** ヘイトスピーチ、差別、暴力、性的な表現など、公序良俗に反する内容は一切含まれていません。
+
+**総合評価:**
+提示された3つのプロンプトは、いずれも法的リスク（商標権、著作権、肖像権の侵害）が極めて低いと判断されます。抽象的かつ汎用的な表現を用いることで、知的財産権に関する懸念を効果的に回避しています。
 
 ---
 
-#### タスク3: 第1章「集中力を阻害する現代の罠」用画像プロンプト
+**承認ステータス:**
+**リーガル＆クオリティ通過を承認します。**
 
-**コンセプト:** 現代人が陥りがちな「集中力を阻害する罠」（デジタルデバイス、マルチタスク、緊急・重要の混同）を象徴的に表現し、問題点を明確に視覚化します。
+---
 
-**英語プロンプト:**
-```
-Coloring book style illustration, ultra-fine lines, minimalist, clean lines. Vertical layout, portrait orientation, designed for an 8.625 x 11.25 inch book page with bleed, 300 DPI print-ready resolution. A person caught in a series of distinct visual 'traps' that hinder focus.
-1.  **Digital Distractions:** A smartphone and computer screen with numerous pop-up notifications, chat bubbles, and endless scroll feeds, visually ensnaring the person's attention like subtle, glowing vines or chains.
-2.  **Multitasking Illusion:** The person is depicted juggling too many diverse tasks (represented by various objects like documents, coffee cups, phones, and a clock) simultaneously, looking overwhelmed and dropping some, illustrating inefficiency and chaos.
-3.  **Urgent vs. Important:** The person stands at a crossroads with two distinct paths or doors. One is brightly lit and labeled 'Urgent' with a crowd rushing towards it, while the other, labeled 'Important', is less visible, slightly overgrown, and neglected. The person is being subtly pulled towards the 'Urgent' path.
-The overall scene should convey the feeling of being trapped and losing focus due to these modern challenges, presented in a clear, illustrative manner. Each 'trap' element is clearly defined and separated, with ample negative space around the central figure and elements to ensure clean margins and readability. Soft pastel colors, simple background, vector art, clean vector graphics. Storybook illustration, no complex shading, no text.
-```
+**KAIZEN（組織改善案）:**
+
+今回のプロンプトは、法的リスクを最小限に抑えるための模範的なアプローチを示しています。この成功を組織全体の標準とするため、以下の改善案を提案します。
+
+1.  **「汎用性と抽象性」の原則の確立:**
+    *   今後プロンプトを作成する際は、特定のブランド、製品、キャラクター、著作物を直接的に想起させる固有名詞や具体的な描写を避け、今回のように「未来感」「解決感」「安心感」といった抽象的な価値や、一般的な概念（例：データ可視化、クラウドシステム、学習環境）を表現する方針を基本とします。これにより、知的財産権侵害のリスクを継続的に低減できます。
+
+2.  **生成画像に対する最終検閲プロセスの強化:**
+    *   今回のプロンプトはクリーンですが、AIモデルの学習データに起因し、意図せず既存のロゴ、ブランド、著作権で保護されたデザイン要素が生成画像に混入する可能性はゼロではありません。特に「print-ready resolution」の指示があるため、最終的な出力物が商業利用されることを想定し、**画像生成後の最終的な目視検閲プロセスを強化することを義務付けます。** 具体的には、以下のチェックリストを導入します。
+        *   生成画像内に、既存の企業ロゴ、ブランド名、製品名、キャラクターが明確に描かれていないか。
+        *   既存の著作権で保護されたアートワークやデザインに酷似していないか。
+        *   特定の有名人や個人を特定できる特徴がないか。
+        *   「text, watermark」のNegative Promptにも関わらず、意図しないテキストやウォーターマークが残っていないか。
+
+3.  **Negative Promptの積極的な活用と標準化:**
+    *   今回のプロンプトで「Blurry, low quality, distorted, ugly, bad anatomy, text, watermark」といったNegative Promptが効果的に活用されています。知的財産権侵害のリスクを低減する上で「text, watermark」は特に重要であり、今後もこの種のNegative Promptを標準的に含めることを推奨します。
+
+4.  **スタイル指示に関するガイドラインの検討:**
+    *   将来的に、特定のアーティストやアートスタイルを指示する場面が発生する可能性があります。その際、著作権侵害のリスクを避けるため、「〇〇風だが、〇〇ではない」といった表現の許容範囲、または特定のスタイルを指示する際の具体的なガイドライン（例：特定のアーティスト名を直接使用せず、そのスタイルを構成する要素を具体的に記述するなど）を策定することを検討します。
+
+これらのKAIZENを組織全体で共有し、プロンプト作成および画像生成プロセスの品質と法的安全性を一層向上させていくことを期待します。
+
+---
+
+以上。
+
+リーガル 兼 品質保証（QA）最高責任者
