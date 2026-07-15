@@ -29,16 +29,15 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        # CrewAIとその関連モジュール、その他必要なパッケージをすべてインストール
-        pip install requests crewai langchain-google-genai
+        # CrewAIとその自動化に必要なライブラリ群をインストール
+        pip install requests crewai langchain-google-genai pydantic
 
     - name: Run KDP Autonomy Loop
       env:
-        # APIキーを複数の候補名でコンテナに確実に注入
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_FX }}
-        API_KEY: ${{ secrets.GEMINI_API_KEY_FX }}
+        # 会長から教えていただいた正しいAPIキー名（GitHub Secretsに登録されている名前）
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_KDP }}
+        API_KEY: ${{ secrets.GEMINI_API_KEY_KDP }}
       run: |
         echo "=== 📚 KDP自律稼働ハイパードライブ 起動 ==="
         python kdp_loop_runner.py
-
 
