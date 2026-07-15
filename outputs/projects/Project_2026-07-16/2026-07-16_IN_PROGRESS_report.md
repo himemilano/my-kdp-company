@@ -1,261 +1,83 @@
 ## リーガル＆クオリティ通過の承認ログ
 
-**承認日時:** 2023年10月27日 10:30 JST
-**承認者:** リーガル 兼 品質保証（QA）最高責任者
-
-### **検閲結果概要:**
-提出された画像生成用英語プロンプトについて、商標権、著作権、およびその他の法的リスクの観点から厳格に検閲を実施しました。
-
-**評価:**
-*   **商標権侵害:** プロンプトには、特定の企業名、製品名、ブランド名、ロゴ、またはそれらを想起させる具体的な表現は含まれていません。「[プロジェクト固有のツール名]」はプレースホルダーとして適切に扱われており、Negative Promptにて「specific product name, logo」を明確に除外しているため、意図しない商標の生成リスクは極めて低いと判断します。
-*   **著作権侵害:** プロンプトは、一般的な技術概念、デザインスタイル（例: "clean, minimalist UI/UX"）、機能説明に終始しており、特定の既存の著作物（絵画、写真、デザイン、キャラクターなど）を直接的に模倣するような指示はありません。「concept art」「UI/UX design」といった表現も、特定の個人や組織の著作権を侵害するものではなく、汎用的な指示として適切です。
-*   **その他法的リスク:** 不適切な内容（ヘイトスピーチ、暴力、性的表現など）、個人情報、機密情報を示唆する表現は一切含まれていません。Negative Promptで「human, hands, face」を除外している点も、肖像権やAI生成における不自然な人体表現のリスク回避に寄与しています。
-
-**結論:**
-本プロンプトは、現時点において商標侵害、著作権侵害、その他法的リスクを伴う要素を含んでいないと判断します。リーガルおよびクオリティ基準を満たしており、承認します。
-
----
-
-### **本日の制作指示書**
-
 **プロジェクト名:** Project_2026-07-16
-**日付:** [本日日付]
+**対象フェーズ:** 第3章：実践！デジタルコンテンツ企画の具体的手順 - 画像生成プロンプト設計ガイドライン
+**検閲日時:** 2024年5月21日 17:30 JST
+**検閲者:** リーガル 兼 品質保証（QA）最高責任者
 
 ---
 
-### **本日の目標 (Goal for Today)**
+### **1. 現状のプロンプトテンプレートに関する法的リスク検閲結果**
 
-プロジェクトの核となる「トップページ」および「主要サービス概要ページ」のコンテンツ骨子と主要要素を完成させ、デザインチームへの引き渡し準備を完了すること。品質に一切の妥協は許されない。
+DTP/レイアウトスペシャリストより提示された「レイアウト最適化済みのプロンプト一覧（現時点ではガイドラインとして提示）」に含まれるプロンプトテンプレート例について、商標権、著作権、肖像権、パブリシティ権、およびその他法的リスクの観点から厳格に検閲いたしました。
 
----
+**検閲対象プロンプトテンプレート例:**
 
-### **制作対象ページ (Pages to Produce Today)**
+*   **プロンプト1 (例: ペルソナ設定のイメージ):**
+    `[PMからの具体的な指示内容：例：20代後半の女性マーケター、オフィスで課題解決に悩む様子、モダンなイラストスタイル] + 8.625 x 11.25 inch vertical layout with bleed, 300 DPI print-ready resolution. Ensure the main subject is centrally focused or intentionally placed to allow for generous surrounding negative space. Minimalist background, clean composition, avoiding clutter.`
 
-1.  **トップページ (Home Page)**
-2.  **AIツール「[プロジェクト固有のツール名]」概要ページ (Product/Service Overview Page)**
+*   **プロンプト2 (例: データ分析のインフォグラフィック):**
+    `[PMからの具体的な指示内容：例：SMART原則に基づいた目標設定の概念図、クリーンで分かりやすいインフォグラフィック風、青と緑を基調とした色彩] + 8.625 x 11.25 inch vertical layout with bleed, 300 DPI print-ready resolution. Ensure the main subject is centrally focused or intentionally placed to allow for generous surrounding negative space. Minimalist background, clean composition, avoiding clutter. Consider areas with subtle, uniform tones suitable for text overlay.`
 
----
+**検閲結果:**
 
-### **各ページの詳細指示 (Detailed Instructions for Each Page)**
+現在のプロンプトテンプレート例自体には、具体的な固有名詞、ブランド名、特定の著作物、または個人を特定できる要素が含まれておらず、**直接的な商標権・著作権・肖像権・パブリシティ権侵害のリスクは認められません。**
 
-#### **1. トップページ (Home Page)**
-
-*   **目的:** 訪問者の興味を引きつけ、AIツール「[プロジェクト固有のツール名]」の革新性と主要な価値提案を瞬時に理解させ、次のアクション（概要ページへの遷移、デモ申し込みなど）を促す。
-*   **ターゲット:** 新しい技術に関心のあるビジネスパーソン、生産性向上を目指す個人・チーム。
-*   **主要メッセージ:** 「[プロジェクト固有のツール名]」は、あなたの業務を劇的に変革し、未来の働き方を実現するAIソリューションです。
-*   **必須要素:**
-    *   **ヒーローセクション:**
-        *   **キャッチコピー:** 簡潔かつ強力に価値を伝える。
-            *   例：「未来の働き方を、今、あなたの手に。AIが業務を自動化・最適化。」
-        *   **サブキャッチコピー:** 具体的なメリットを補足。
-            *   例：「複雑なデータ分析からコンテンツ生成まで、[プロジェクト固有のツール名]があなたの生産性を最大化します。」
-        *   **キービジュアルの方向性:** 視覚的にインパクトがあり、ツールの先進性を表現するもの。抽象的なAIのイメージ、またはシンプルなUIのモックアップ。
-        *   **CTAボタン:** 最も重要なアクション。
-            *   例：「今すぐデモを体験」「詳細を見る」
-    *   **主要な価値提案 (3-4点):**
-        *   ツールの核となるメリットをアイコンと短い説明文で提示。
-            *   例：「データ分析の自動化」「コンテンツ生成の高速化」「意思決定の最適化」
-    *   **導入事例/実績 (任意だが推奨):**
-        *   信頼性を高めるため、導入企業のロゴや簡単な実績データ。
-    *   **CTAセクション (フッター手前):**
-        *   再度、強力なCTA。
-            *   例：「無料トライアルを開始する」「資料をダウンロード」
-*   **デザイン指示 (コンテンツ側からの要望):**
-    *   クリーンでモダンなUI/UX。
-    *   青や緑を基調とした信頼感・先進性を感じさせる配色。
-    *   レスポンシブデザインを前提としたコンテンツ構成。
-*   **コンテンツ指示:**
-    *   専門用語は避け、平易な言葉で説明。
-    *   短く、読みやすい文章構成。
-    *   箇条書きやアイコンを多用し、視覚的に情報を整理。
-
-#### **2. AIツール「[プロジェクト固有のツール名]」概要ページ (Product/Service Overview Page)**
-
-*   **目的:** トップページで提示された価値提案を深掘りし、ツールの具体的な機能、メリット、利用シーンを詳細に説明する。ユーザーの疑問を解消し、導入への意欲を高める。
-*   **ターゲット:** トップページで興味を持った、より具体的な情報を求める潜在顧客。
-*   **主要メッセージ:** 「[プロジェクト固有のツール名]」は、あなたのビジネス課題を解決し、具体的な成果をもたらすための包括的なAIソリューションです。
-*   **必須要素:**
-    *   **導入部:**
-        *   **ページタイトル:** 「AIツール『[プロジェクト固有のツール名]』とは？」
-        *   **リード文:** ツールの全体像と、このページで得られる情報を簡潔に説明。
-    *   **主要機能セクション (3-5点):**
-        *   各機能について、具体的な機能名、説明、それがもたらすメリットをセットで記述。
-        *   可能であれば、各機能のスクリーンショットや簡単なフロー図を想定。
-        *   例：
-            *   **機能1: 高度なデータ分析**
-                *   説明: 複雑なデータセットからパターンを自動検出し、インサイトを抽出します。
-                *   メリット: 意思決定の迅速化、市場トレンドの早期発見。
-            *   **機能2: コンテンツ自動生成**
-                *   説明: ブログ記事、SNS投稿、メール文面などをAIが瞬時に生成します。
-                *   メリット: マーケティング効率の向上、クリエイティブ業務の負担軽減。
-            *   **機能3: ワークフロー自動化**
-                *   説明: 定型業務や繰り返し作業をAIが自動化し、人的ミスを削減します。
-                *   メリット: 運用コストの削減、従業員のコア業務への集中。
-    *   **利用シーン/ソリューション:**
-        *   どのような業種や職種で、どのように活用できるかを具体例を挙げて説明。
-            *   例：「マーケティング部門での活用」「営業チームでの活用」「開発部門での活用」
-    *   **導入メリットのまとめ:**
-        *   数値データや具体的な成果を強調。
-    *   **FAQ (任意だが推奨):**
-        *   よくある質問とその回答。
-    *   **CTAセクション:**
-        *   例：「無料トライアルを始める」「料金プランを見る」「お問い合わせ」
-*   **デザイン指示 (コンテンツ側からの要望):**
-    *   情報を整理し、視覚的に理解しやすいレイアウト。
-    *   図解やアイコンを積極的に活用。
-    *   セクションごとに明確な区切りを設ける。
-*   **コンテンツ指示:**
-    *   機能説明は具体的に、かつメリットを強調。
-    *   専門用語を使用する場合は、補足説明を付記。
-    *   ユーザーが「自分ごと」として捉えられるような表現を心がける。
+DTP/レイアウトスペシャリストが提示した技術要件（例: `8.625 x 11.25 inch vertical layout with bleed, 300 DPI print-ready resolution`）およびデザインガイドライン（例: `Minimalist background, clean composition, avoiding clutter`）は、法的リスクとは直接関連せず、品質および実用性の観点から適切であると判断します。
 
 ---
 
-### **共通指示 (General Instructions)**
+### **2. 今後のプロセスにおける法的リスク回避のための追加指示とKAIZEN案**
 
-*   **品質基準:** 全てのコンテンツは、誤字脱字がなく、文法的に正しく、ブランドトーンに合致していること。一語一句、厳格なチェックを怠らないこと。
-*   **SEO最適化:** 各ページの主要キーワードを意識し、自然な形で盛り込むこと。キーワードリストは別途共有する。
-*   **連携:** コンテンツ作成後、デザインチーム、開発チームと連携し、スムーズな実装を可能にするための情報共有を徹底すること。不明点は即座に報告し、解決策を求めること。
-*   **納期:** 本日中に上記ページのコンテンツ骨子と主要テキストを完成させ、レビュー可能な状態にすること。
+上記の通り、現在のテンプレート自体に問題はありませんが、**`[PMからの具体的な指示内容]` の部分に、今後どのような具体的な情報が追加されるかによって、法的リスクが発生する可能性が極めて高い**ため、以下の追加指示と組織改善案（KAIZEN）を提示いたします。
 
----
+**2.1. プロンプト作成・画像生成における法的リスク回避のための必須ガイドライン**
 
-### **確認事項 (Checklist for Completion)**
+AI画像生成の専門家およびPMは、以下の点に厳重に注意し、プロンプトの作成および生成画像の選定を行ってください。
 
-*   [ ] 各ページの目的は明確か？
-*   [ ] ターゲットに響くメッセージになっているか？
-*   [ ] 必須要素は全て含まれているか？
-*   [ ] CTAは明確で、次のアクションに繋がりやすいか？
-*   [ ] 誤字脱字、文法ミスはないか？
-*   [ ] ブランドトーンに合致しているか？
-*   [ ] 「[プロジェクト固有のツール名]」のプレースホルダーは、適切な名称に置き換えられているか？
+1.  **商標権侵害の回避:**
+    *   **特定のブランド名、製品名、ロゴ、またはそれらを想起させるデザインや特徴をプロンプトに含めないでください。** （例：「Apple製品を使うビジネスパーソン」ではなく、「ノートPCを使うビジネスパーソン」とする。）
+    *   **特定の企業のオフィス環境や、特徴的な建築物を模倣する指示は避けてください。**
 
----
+2.  **著作権侵害の回避:**
+    *   **特定のキャラクター、アニメ、映画、ゲーム、漫画、イラストレーターの画風、または既存の著作物の具体的なシーンや構図を模倣する指示は避けてください。** （例：「ジブリ風の森」ではなく、「幻想的な森の風景」とする。）
+    *   **既存の写真やイラストを直接的に参照し、「この画像のように」といった指示は行わないでください。**
+    *   **「〇〇（有名アーティスト名）のスタイルで」といった指示は、著作権侵害のリスクがあるため、原則として避けてください。** 一般的なスタイル（例：「水彩画風」「油絵風」「モダンなイラスト」）に留めてください。
 
-以上。本日の作業に集中し、最高の品質で成果を出すことを期待する。
+3.  **肖像権・パブリシティ権侵害の回避:**
+    *   **特定の有名人、著名人、または個人を特定できるような顔立ち、身体的特徴、服装、背景などをプロンプトに含めないでください。**
+    *   **生成された画像が、偶然にも特定の個人を想起させる場合は、使用を中止し、再生成を依頼してください。**
 
-----------
+4.  **公序良俗に反する内容の回避:**
+    *   差別的、暴力的、性的な表現、または誤解を招くような表現は一切含めないでください。
 
-## 本日分の画像生成用英語プロンプト初稿
+5.  **引用・出典の明確化（テキストコンテンツとの連携）:**
+    *   画像内に具体的なデータや引用元を示す必要がある場合は、テキストコンテンツと同様に、その情報源の信頼性を確認し、適切な形で明記する準備をしてください。
 
-PMの指示に基づき、本日分の画像生成用英語プロンプトを設計しました。各ページの目的、ターゲット、デザイン指示、コンテンツ指示を考慮し、高品質かつクリーンなビジュアル生成を目指します。
+**2.2. プロジェクト完了時の組織改善案（KAIZEN）**
 
----
+本プロジェクトを通じて、AI画像生成プロセスにおける法的リスク管理を強化するため、以下の組織改善案を提案します。
 
-### **1. トップページ (Home Page) 用プロンプト**
+1.  **PM向け「画像生成指示ガイドライン（法的リスクチェックリスト付き）」の作成:**
+    *   PMが画像生成の具体的な指示を出す際に、上記2.1の法的リスクガイドラインを網羅したチェックリストをPM自身が確認するプロセスを導入します。これにより、初期段階でのリスクを低減します。
 
-**目的:** 訪問者の興味を引きつけ、AIツールの革新性と主要な価値提案を瞬時に理解させる、視覚的にインパクトのある先進的なキービジュアル。
+2.  **AI画像生成専門家向け「プロンプト作成における法的リスク回避トレーニング」の実施:**
+    *   AI画像生成の専門家に対し、著作権・商標権に関する最新の法的知識と、プロンプト作成における具体的なリスク回避策を学ぶトレーニングを定期的に実施します。
 
-**プロンプト:**
-```
-Positive Prompt:
-A futuristic AI concept, abstract glowing neural network merging with a clean, minimalist user interface (UI) on a screen. The UI displays simplified data flow and abstract geometric shapes, with a focus on a harmonious blue and green color scheme. Modern, sleek design, digital transformation, innovation, productivity, high resolution, 4K, concept art, professional, corporate, soft ambient lighting, subtle glow, sharp focus.
+3.  **生成画像の最終リーガルチェックプロセスの確立:**
+    *   AIによって生成された画像が最終的に選定され、コンテンツに組み込まれる前に、リーガルチームによる最終的な法的リスクチェックを義務付けるプロセスを確立します。これにより、二重のチェック体制を構築し、リスクを最小化します。
 
-Negative Prompt:
-ugly, deformed, blurry, low quality, bad anatomy, extra limbs, text, watermark, cartoon, anime, noisy, grainy, cluttered, messy, human, hands, face, specific product name, logo.
-```
-
----
-
-### **2. AIツール「[プロジェクト固有のツール名]」概要ページ (Product/Service Overview Page) 用プロンプト**
-
-#### **2-1. 主要機能セクション - 「高度なデータ分析」用プロンプト**
-
-**目的:** 高度なデータ分析機能が、複雑なデータを視覚的に整理し、インサイトを抽出する様子を示すスクリーンショット/フロー図。
-
-**プロンプト:**
-```
-Positive Prompt:
-A clean and modern UI/UX concept for an AI-powered data analysis dashboard. Display interactive charts, graphs, and data visualizations with a focus on business intelligence and actionable insights. Predominant blue and green color accents on a minimalist white background. Professional, high resolution, screen capture style, UI/UX design, clear data flow, abstract data points, sharp focus, no specific text, no watermark.
-
-Negative Prompt:
-ugly, deformed, blurry, low quality, bad anatomy, extra limbs, text, watermark, cartoon, anime, noisy, grainy, cluttered, complex, messy, human, hands, face, specific product name, logo.
-```
-
-#### **2-2. 主要機能セクション - 「コンテンツ自動生成」用プロンプト**
-
-**目的:** AIがテキストやビジュアルコンテンツを生成するプロセスを、クリーンなUIで表現するスクリーンショット/フロー図。
-
-**プロンプト:**
-```
-Positive Prompt:
-A clean and modern UI/UX concept for an AI content generation interface. Show a minimalist text editor with smart suggestions and generative AI features for creating blog posts or social media content. Predominant blue and green color accents on a minimalist white background. Professional, high resolution, screen capture style, UI/UX design, creative writing assistant, abstract content blocks, sharp focus, no specific text, no watermark.
-
-Negative Prompt:
-ugly, deformed, blurry, low quality, bad anatomy, extra limbs, text, watermark, cartoon, anime, noisy, grainy, cluttered, complex, messy, human, hands, face, specific product name, logo.
-```
-
-#### **2-3. 主要機能セクション - 「ワークフロー自動化」用プロンプト**
-
-**目的:** 業務プロセスがAIによって自動化され、効率的に流れる様子を示すフロー図/スクリーンショット。
-
-**プロンプト:**
-```
-Positive Prompt:
-A clean and modern UI/UX concept for an AI workflow automation diagram or process flow. Illustrate interconnected systems and tasks being automated, emphasizing efficiency and streamlined operations. Predominant blue and green color accents on a minimalist white background. Professional, high resolution, screen capture style, UI/UX design, robotic process automation (RPA) visualization, abstract task nodes, sharp focus, no specific text, no watermark.
-
-Negative Prompt:
-ugly, deformed, blurry, low quality, bad anatomy, extra limbs, text, watermark, cartoon, anime, noisy, grainy, cluttered, complex, messy, human, hands, face, specific product name, logo.
-```
-
-----------
-
-レイアウト最適化済みのプロンプト一覧
+4.  **「著作権・商標権に関するQ&Aデータベース」の構築:**
+    *   プロジェクト内で発生した法的疑問や判断事例を蓄積し、チーム全体で共有できるQ&Aデータベースを構築します。これにより、知識の共有と判断の迅速化を図ります。
 
 ---
 
-### **1. トップページ (Home Page) 用プロンプト**
+### **3. 最終承認**
 
-**目的:** 訪問者の興味を引きつけ、AIツールの革新性と主要な価値提案を瞬時に理解させる、視覚的にインパクトのある先進的なキービジュアル。
+上記の追加指示とKAIZEN案を厳守することを条件に、DTP/レイアウトスペシャリストが提示した「レイアウト最適化済みのプロンプト一覧（現時点ではガイドラインとして提示）」は、**リーガル＆クオリティ通過を承認します。**
 
-**プロンプト:**
-```
-Positive Prompt:
-A futuristic AI concept, abstract glowing neural network merging with a clean, minimalist user interface (UI) on a screen. The UI displays simplified data flow and abstract geometric shapes, with a focus on a harmonious blue and green color scheme. Modern, sleek design, digital transformation, innovation, productivity, high resolution, 4K, concept art, professional, corporate, soft ambient lighting, subtle glow, sharp focus. Designed for an 8.625 x 11.25 inch vertical print layout with bleed, ensuring a clean, minimalist aesthetic with a spacious, uncluttered composition and print-ready resolution.
-
-Negative Prompt:
-ugly, deformed, blurry, low quality, bad anatomy, extra limbs, text, watermark, cartoon, anime, noisy, grainy, cluttered, messy, human, hands, face, specific product name, logo.
-```
+PMおよび制作チームは、本承認ログに記載された法的リスク回避のためのガイドラインを深く理解し、今後のプロンプト作成および画像生成プロセスにおいて厳格に適用してください。
 
 ---
-
-### **2. AIツール「[プロジェクト固有のツール名]」概要ページ (Product/Service Overview Page) 用プロンプト**
-
-#### **2-1. 主要機能セクション - 「高度なデータ分析」用プロンプト**
-
-**目的:** 高度なデータ分析機能が、複雑なデータを視覚的に整理し、インサイトを抽出する様子を示すスクリーンショット/フロー図。
-
-**プロンプト:**
-```
-Positive Prompt:
-A clean and modern UI/UX concept for an AI-powered data analysis dashboard. Display interactive charts, graphs, and data visualizations with a focus on business intelligence and actionable insights. Predominant blue and green color accents on a minimalist white background. Professional, high resolution, screen capture style, UI/UX design, clear data flow, abstract data points, sharp focus, no specific text, no watermark. Designed for an 8.625 x 11.25 inch vertical print layout with bleed, ensuring a clean, minimalist aesthetic with a spacious, uncluttered composition and print-ready resolution.
-
-Negative Prompt:
-ugly, deformed, blurry, low quality, bad anatomy, extra limbs, text, watermark, cartoon, anime, noisy, grainy, cluttered, complex, messy, human, hands, face, specific product name, logo.
-```
-
-#### **2-2. 主要機能セクション - 「コンテンツ自動生成」用プロンプト**
-
-**目的:** AIがテキストやビジュアルコンテンツを生成するプロセスを、クリーンなUIで表現するスクリーンショット/フロー図。
-
-**プロンプト:**
-```
-Positive Prompt:
-A clean and modern UI/UX concept for an AI content generation interface. Show a minimalist text editor with smart suggestions and generative AI features for creating blog posts or social media content. Predominant blue and green color accents on a minimalist white background. Professional, high resolution, screen capture style, UI/UX design, creative writing assistant, abstract content blocks, sharp focus, no specific text, no watermark. Designed for an 8.625 x 11.25 inch vertical print layout with bleed, ensuring a clean, minimalist aesthetic with a spacious, uncluttered composition and print-ready resolution.
-
-Negative Prompt:
-ugly, deformed, blurry, low quality, bad anatomy, extra limbs, text, watermark, cartoon, anime, noisy, grainy, cluttered, complex, messy, human, hands, face, specific product name, logo.
-```
-
-#### **2-3. 主要機能セクション - 「ワークフロー自動化」用プロンプト**
-
-**目的:** 業務プロセスがAIによって自動化され、効率的に流れる様子を示すフロー図/スクリーンショット。
-
-**プロンプト:**
-```
-Positive Prompt:
-A clean and modern UI/UX concept for an AI workflow automation diagram or process flow. Illustrate interconnected systems and tasks being automated, emphasizing efficiency and streamlined operations. Predominant blue and green color accents on a minimalist white background. Professional, high resolution, screen capture style, UI/UX design, robotic process automation (RPA) visualization, abstract task nodes, sharp focus, no specific text, no watermark. Designed for an 8.625 x 11.25 inch vertical print layout with bleed, ensuring a clean, minimalist aesthetic with a spacious, uncluttered composition and print-ready resolution.
-
-Negative Prompt:
-ugly, deformed, blurry, low quality, bad anatomy, extra limbs, text, watermark, cartoon, anime, noisy, grainy, cluttered, complex, messy, human, hands, face, specific product name, logo.
-```
+**リーガル 兼 品質保証（QA）最高責任者**
+[署名]
