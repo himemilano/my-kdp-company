@@ -23,17 +23,15 @@ jobs:
         python-version: '3.11'
 
     - name: Install Dependencies
+      # crewai等は不要！直リクエストエンジンに必要なrequestsだけを爆速インストール
       run: |
         python -m pip install --upgrade pip
-        # crewaiが正常に動作するために必要なライブラリ群
-        pip install requests crewai langchain-google-genai pydantic
+        pip install requests
 
     - name: Run KDP Autonomy
       env:
-        # 🔑 最新のcrewaiの要求に合わせて、両方の変数名でSecretsキーを完璧に注入します！
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_KDP }}
-        GOOGLE_API_KEY: ${{ secrets.GEMINI_API_KEY_KDP }}
-        API_KEY: ${{ secrets.GEMINI_API_KEY_KDP }}
+        # 🔑 main.pyの要求する変数名と、GitHub Secretsのキーを完全に結合！
+        KDP_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_KDP }}
       run: python main.py
 
     - name: Commit and Push Progress
@@ -41,5 +39,5 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add -A
-        git commit -m "📚 [KDP出版部] 本日の成果物をコミットして定時退勤します ($(date))" || echo "変更なし"
+        git commit -m "📚 [KDP出版部] 本日の成果物をコミットして定時退勤します" || echo "変更なし"
         git push
