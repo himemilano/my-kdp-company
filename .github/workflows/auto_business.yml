@@ -31,7 +31,7 @@ jobs:
     - name: Run KDP Autonomy
       env:
         # 🔑 main.pyの要求する変数名と、GitHub Secretsのキーを完全に結合！
-        KDP_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_KDP }}
+        GEMINI_API_KEY_MY_KDP: ${{ secrets.GEMINI_API_KEY_MY_KDP }}
       run: python main.py
 
     - name: Commit and Push Progress
