@@ -1,6 +1,5 @@
 import os
 import csv
-import yaml
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
@@ -35,17 +34,17 @@ class KDPPrintedCanvas(canvas.Canvas):
             self.drawRightString(width_pt - 54, 36, page_text)
         self.restoreState()
 
-def generate_interior_pdf(project_slug="01_tranquil_flora"):
-    print(f"🎨 [KDP汎用エンジン] プロジェクト '{project_slug}' の内装PDFを構築中...")
+def generate_interior_pdf(project_slug):
+    print(f"🎨 [KDP汎用エンジン] プロジェクト '{project_slug}' の完成版内装PDFを構築中...")
 
     project_root = f"projects/{project_slug}"
     workspace_dir = os.path.join(project_root, "kdp_workspace")
+    assets_dir = os.path.join(project_root, "assets")
     output_dir = os.path.join(project_root, "output")
     os.makedirs(output_dir, exist_ok=True)
 
     interior_pdf_path = os.path.join(output_dir, "Interior.pdf")
 
-    # プロジェクト固有の本文CSVを動的探索
     csv_files = [f for f in os.listdir(workspace_dir) if f.endswith("_body_bulk_create.csv")]
     body_data = []
     if csv_files:
@@ -54,9 +53,7 @@ def generate_interior_pdf(project_slug="01_tranquil_flora"):
             reader = csv.DictReader(f)
             for row in reader:
                 body_data.append(row)
-        print(f"📂 本文CSV ({csv_files[0]}) から {len(body_data)} 件のデータをロードしました。")
 
-    # ページ数をデータ数から動的算出（デフォルト60ページ、またはCSV量に応じた調整）
     total_pages = max(60, len(body_data) * 2) if body_data else 60
 
     pt_per_inch = 72
@@ -69,12 +66,13 @@ def generate_interior_pdf(project_slug="01_tranquil_flora"):
     c = KDPPrintedCanvas(interior_pdf_path, pagesize=(total_width, total_height))
 
     csv_index = 0
+    plate_counter = 0
+
     for page_num in range(1, total_pages + 1):
         bx = bleed_pt
         by = bleed_pt
 
         if page_num % 2 == 0:
-            # 偶数ページ（左側）：タイトル、解説、塗る時のヒント
             title_text = f"Notes - Page {page_num}"
             desc_text = "Project Layout Content"
             
@@ -96,10 +94,10 @@ def generate_interior_pdf(project_slug="01_tranquil_flora"):
             c.setLineWidth(0.5)
             c.rect(bx + 36, by + 54, trim_width - 72, trim_height - 120)
         else:
-            # 奇数ページ（右側）：Pythonによるミニマル植物線画アートの自動描画
+            plate_counter += 1
             c.setFont("Helvetica-Bold", 10)
             c.setFillColor(colors.HexColor("#333333"))
-            c.drawString(bx + 36, by + trim_height - 36, f"Plate {page_num // 2 + 1}")
+            c.drawString(bx + 36, by + trim_height - 36, f"Plate {plate_counter}")
             
             margin = 36 
             frame_width = trim_width - (2 * margin)
@@ -107,37 +105,21 @@ def generate_interior_pdf(project_slug="01_tranquil_flora"):
             x_pos = bx + margin
             y_pos = by + 45
             
-            # 外枠（セーフゾーン）
-            c.setStrokeColor(colors.black)
-            c.setLineWidth(1)
-            c.rect(x_pos, y_pos, frame_width, frame_height)
+            asset_filename = f"plate_{plate_counter:02d}.png"
+            asset_path = os.path.join(assets_dir, asset_filename)
             
-            # Pythonスクリプトによるミニマル線画の描画処理
-            c.saveState()
-            c.setStrokeColor(colors.HexColor("#222222"))
-            c.setLineWidth(0.75)
-            
-            center_x = x_pos + (frame_width / 2)
-            center_y = y_pos + (frame_height / 2)
-            
-            # 侘び寂び・ミニマリズムを表現する同心円やボタニカルラインのベクター描画
-            for r in range(25, 130, 30):
-                c.circle(center_x, center_y, r, stroke=1, fill=0)
-            
-            c.line(center_x, y_pos + 50, center_x, y_pos + frame_height - 50)
-            c.line(x_pos + 50, center_y, x_pos + frame_width - 50, center_y)
-            
-            c.restoreState()
-            
-            c.setFont("Helvetica", 9)
-            c.setFillColor(colors.HexColor("#666666"))
-            c.drawCentredString(center_x, y_pos + 15, "Minimalist Botanical Line Art (Generated via Python)")
+            if os.path.exists(asset_path):
+                c.drawImage(asset_path, x_pos, y_pos, width=frame_width, height=frame_height, preserveAspectRatio=True, anchor='c')
+            else:
+                c.setStrokeColor(colors.black)
+                c.setLineWidth(1)
+                c.rect(x_pos, y_pos, frame_width, frame_height)
+                c.setFont("Helvetica", 9)
+                c.setFillColor(colors.HexColor("#666666"))
+                c.drawCentredString(x_pos + (frame_width / 2), y_pos + (frame_height / 2), "[ Image Asset Missing ]")
 
         c.showPage()
 
     c.save()
-    print(f"✅ 内装PDFの生成が完了しました: {interior_pdf_path}")
+    print(f"✅ 完成版内装PDFの生成が完了しました: {interior_pdf_path}")
     return interior_pdf_path
-
-if __name__ == "__main__":
-    generate_interior_pdf()
