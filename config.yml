@@ -1,10 +1,16 @@
-# config.yml
+project:
+  name: "01_tranquil_flora"
+
 project_defaults:
   trim_size_inches: [8.5, 11.0] # KDP標準USレター判型
   margin_inches: 0.5           # 安全余白
 
 api_settings:
   model_name: "gemini-2.5-flash"
+
+book_specs:
+  page_count: 50
+  # ※KDPの無料ISBNを使用するため、裏表紙右下にはバーコード用のホワイトボックスが自動で空けられます
 
 genre_layouts:
   coloring_book:
