@@ -39,11 +39,13 @@ def generate_interior_pdf():
     print("🎨 [KDP出版部] 実画像自動インポート対応・内装PDFレイアウトエンジン起動中...")
 
     config_path = "config.yml"
+    config = {}
     if os.path.exists(config_path):
-        with open(config_path, "r", encoding="utf-8") as f:
-            config = yaml.safe_load(f)
-    else:
-        config = {}
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                config = yaml.safe_load(f) or {}
+        except Exception as e:
+            print(f"⚠️ config.yml 読み込み警告: {e}")
 
     genre = config.get("genre_layouts", {}).get("coloring_book", {})
     min_pages = genre.get("min_pages", 24)
@@ -51,16 +53,21 @@ def generate_interior_pdf():
     workspace_dir = "kdp_workspace"
     active_proj_path = "active_project.json"
     if os.path.exists(active_proj_path):
-        with open(active_proj_path, "r", encoding="utf-8") as f:
-            project_info = json.load(f)
-        workspace_dir = os.path.join(project_info["project_root"], "kdp_workspace")
+        try:
+            with open(active_proj_path, "r", encoding="utf-8") as f:
+                project_info = json.load(f)
+            workspace_dir = os.path.join(project_info.get("project_root", "projects/01_tranquil_flora"), "kdp_workspace")
+        except Exception as e:
+            print(f"⚠️ active_project.json 読み込み警告: {e}")
 
-    assets_dir = "assets"
-    os.makedirs(workspace_dir, output_dir := "output", exist_ok=True)
+    output_dir = "output"
+    # 安全にディレクトリを個別に作成（TypeErrorを完全防止）
+    os.makedirs(workspace_dir, exist_ok=True)
     os.makedirs(output_dir, exist_ok=True)
     
     interior_pdf_path = os.path.join(output_dir, "Interior.pdf")
 
+    assets_dir = "assets"
     image_files = []
     if os.path.exists(assets_dir):
         image_files = sorted([
@@ -130,4 +137,3 @@ def generate_interior_pdf():
 
 if __name__ == "__main__":
     generate_interior_pdf()
-
