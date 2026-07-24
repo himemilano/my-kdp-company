@@ -1,58 +1,79 @@
 import os
-import json
-import yaml
-from google import genai
-from scripts.generate_cover import generate_cover_pdf
-from scripts.generate_interior import generate_interior_pdf
+import sys
+from datetime import datetime
+
+def log_message(msg):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{timestamp}] {msg}")
+
+def update_lessons_learned(project_slug, status, notes):
+    lessons_path = "knowledge/lessons_learned.md"
+    os.makedirs("knowledge", exist_ok=True)
+    
+    log_entry = f"\n- **Project**: {project_slug} | **Date**: {datetime.now().strftime('%Y-%m-%d')} | **Status**: {status} | **Notes**: {notes}"
+    
+    if os.path.exists(lessons_path):
+        with open(lessons_path, "a", encoding="utf-8") as f:
+            f.write(log_entry)
+    else:
+        with open(lessons_path, "w", encoding="utf-8") as f:
+            f.write(f"# Organization Lessons Learned & Self-Improvement Log\n{log_entry}")
 
 def main():
-    print("🚀 [KDP出版部] 自律オーケストレーター起動中（API認証・プロジェクト個別完全汎用版）...")
-
-    # 1. Gemini APIの秘匿キー検証と初期化
-    api_key = os.environ.get("GEMINI_API_KEY_MY_KDP")
-    if not api_key:
-        raise ValueError("❌ 秘匿キー 'GEMINI_API_KEY_MY_KDP' が環境変数に見つかりません。")
-        
-    client = genai.Client(api_key=api_key)
-    MODEL_NAME = "gemini-2.5-flash"
-    print(f"🤖 使用モデル: {MODEL_NAME}")
-
-    # 2. config.yml からアクティブなプロジェクトのslugを動的取得
-    config_path = "config.yml"
-    config = {}
-    if os.path.exists(config_path):
-        with open(config_path, "r", encoding="utf-8") as f:
-            config = yaml.safe_load(f) or {}
-            
-    project_slug = config.get("project", {}).get("name", "01_tranquil_flora")
-    project_root = f"projects/{project_slug}"
-    workspace_dir = os.path.join(project_root, "kdp_workspace")
-    output_dir = os.path.join(project_root, "output")
+    project_slug = sys.argv[1] if len(sys.argv) > 1 else "02_zen_mindful_patterns"
     
-    os.makedirs(workspace_dir, exist_ok=True)
-    os.makedirs(output_dir, exist_ok=True)
+    log_message(f"🚀 KDP自律進化組織 パイプライン起動: [{project_slug}]")
 
-    # 3. アクティブプロジェクト情報の書き出し
-    active_info = {
-        "project_root": project_root,
-        "project_slug": project_slug,
-        "title": "Tranquil Flora: A Japanese Minimalist Botanical Coloring Book for Adults"
-    }
-    with open("active_project.json", "w", encoding="utf-8") as f:
-        json.dump(active_info, f, ensure_ascii=False, indent=2)
+    project_root = f"projects/{project_slug}"
+    os.makedirs(os.path.join(project_root, "kdp_workspace"), exist_ok=True)
+    os.makedirs(os.path.join(project_root, "assets"), exist_ok=True)
+    os.makedirs(os.path.join(project_root, "output"), exist_ok=True)
 
-    print(f"📂 アクティブプロジェクト: {project_slug} ({active_info['title']})")
+    try:
+        # 1. 企画・戦略エージェント（Knowledge ＋ Gemini API連携）
+        log_message("📋 [1/5] 企画・戦略エージェント稼働中 (Gemini 2.5 Flash)...")
+        from scripts.agent_planner import run_planner_agent
+        run_planner_agent(project_slug)
 
-    # 4. Step 1: 本文PDFビルド（プロジェクトslugを渡して汎用実行）
-    print("\n--- [Step 1] 本文PDFビルド ---")
-    interior_pdf = generate_interior_pdf(project_slug)
+        # 2. テキスト・CSVデータ生成
+        log_message("📝 [2/5] テキスト・CSVエージェント稼働中...")
+        csv_file = os.path.join(project_root, "kdp_workspace", f"{project_slug}_body_bulk_create.csv")
+        if not os.path.exists(csv_file):
+            import csv
+            with open(csv_file, mode="w", newline="", encoding="utf-8") as f:
+                writer = csv.writer(f)
+                writer.writerow(["title", "description"])
+                for i in range(1, 31):
+                    writer.writerow([f"Plate {i}: Mindful Art", f"Zen geometric botanical pattern designed for deep relaxation and stress relief."])
 
-    # 5. Step 2: 表紙カバーPDFビルド（プロジェクトslugを渡して汎用実行）
-    print("\n--- [Step 2] 表紙カバー見開きPDFビルド ---")
-    cover_pdf = generate_cover_pdf(project_slug)
+        # 3. 視覚アセット生成エージェント
+        log_message("🌿 [3/5] 視覚線画アセット生成エージェント稼働中...")
+        from scripts.agent_asset import run_asset_agent
+        run_asset_agent(project_slug)
 
-    print(f"\n✨ すべての自動処理が正常に完了しました。")
-    print(f"📦 成果物格納先: {output_dir}/Interior.pdf および {output_dir}/Cover.pdf")
+        # 4. PDFビルドエージェント (Interior ＆ Cover)
+        log_message("🎨 [4/5] PDFビルドエージェント稼働中...")
+        from scripts.generate_interior import generate_interior_pdf
+        from scripts.generate_cover import generate_cover_pdf
+        
+        generate_interior_pdf(project_slug)
+        generate_cover_pdf(project_slug)
+
+        # 5. 品質検証 ＆ 自己進化ログの記録
+        log_message("🔍 [5/5] 品質検証・自己進化エージェント稼働中...")
+        interior_pdf = os.path.join(project_root, "output", "Interior.pdf")
+        cover_pdf = os.path.join(project_root, "output", "Cover.pdf")
+        
+        if os.path.exists(interior_pdf) and os.path.exists(cover_pdf):
+            log_message("✅ すべての成果物のビルドと検証が正常に完了しました！")
+            update_lessons_learned(project_slug, "SUCCESS", "Successfully generated AI-planned, fully integrated KDP PDFs using Knowledge base.")
+        else:
+            raise FileNotFoundError("必須のPDF出力成果物が見つかりません。")
+
+    except Exception as e:
+        log_message(f"❌ エラーが発生しました: {e}")
+        update_lessons_learned(project_slug, "FAILED", f"Pipeline crashed: {str(e)}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
