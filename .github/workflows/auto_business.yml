@@ -1,43 +1,38 @@
-name: 📚 KDP Publisher One-Shot Advance
+name: Auto KDP Business Pipeline
 
 on:
-  schedule:
-    # 毎日 日本時間 10:50, 14:50, 17:50
-    - cron: '50 1,5,8 * * *'
-  workflow_dispatch: # 手動で即時開発を指示できるボタン
-
-permissions:
-  contents: write
+  workflow_dispatch: # スマホから手動実行できるようにする設定
 
 jobs:
-  run-kdp-limitless:
+  build-kdp-assets:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      # 1. リポジトリのチェックアウト
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+      # 2. Python環境のセットアップ
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-    - name: Install Dependencies
-      # requests および config.yml 読み込み用の pyyaml をインストール
-      run: |
-        python -m pip install --upgrade pip
-        pip install requests pyyaml
+      # 3. 必要なライブラリの一括インストール（ModuleNotFoundError対策）
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    - name: Run KDP Autonomy
-      env:
-        # 🔑 main.pyの要求する変数名と、GitHub Secretsのキーを完全に結合！
-        GEMINI_API_KEY_MY_KDP: ${{ secrets.GEMINI_API_KEY_MY_KDP }}
-      run: python main.py
+      # 4. メインオーケストレーター（main.py）の実行
+      - name: Run main orchestration & PDF build
+        run: python main.py
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
-    - name: Commit and Push Progress
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add -A
-        git commit -m "📚 [KDP出版部] 本日の成果物をコミットして定時退勤します" || echo "変更なし"
-        git push
+      # 5. 生成されたPDFやファイルを自動でリポジトリにコミット＆プッシュ
+      - name: Commit and push generated PDFs
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "✨ Auto-generated KDP Interior.pdf and Cover.pdf via GitHub Actions [skip ci]"
+          file_pattern: output/*.pdf kdp_workspace/* active_project.json
