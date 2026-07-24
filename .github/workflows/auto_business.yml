@@ -18,21 +18,26 @@ jobs:
         with:
           python-version: '3.10'
 
-      # 3. 必要なライブラリの一括インストール（ModuleNotFoundError対策）
+      # 3. 必要なライブラリの一括インストール
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      # 4. メインオーケストレーター（main.py）の実行（シークレット名義を指定）
+      # 4. メインオーケストレーター（main.py）の実行
       - name: Run main orchestration & PDF build
         run: python main.py
         env:
           GEMINI_API_KEY_MY_KDP: ${{ secrets.GEMINI_API_KEY_MY_KDP }}
 
-      # 5. 生成されたPDFやファイルを自動でリポジトリにコミット＆プッシュ
+      # 5. 生成されたPDFや成果物を自動でコミット＆プッシュ（パス指定を安全化）
       - name: Commit and push generated PDFs
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "✨ Auto-generated KDP Interior.pdf and Cover.pdf via GitHub Actions [skip ci]"
-          file_pattern: output/*.pdf kdp_workspace/* active_project.json
+          file_pattern: |
+            output/Interior.pdf
+            output/Cover.pdf
+            active_project.json
+            projects/01_tranquil_flora/kdp_workspace/*.csv
+            projects/01_tranquil_flora/kdp_workspace/*.md
