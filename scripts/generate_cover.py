@@ -14,15 +14,16 @@ def generate_cover_pdf(project_slug="01_tranquil_flora"):
     bleed = dims["bleed_pts"]
     trim_w = dims["trim_width_pts"]
 
-    workspace_dir = f"projects/{project_slug}/kdp_workspace"
-    output_dir = f"projects/{project_slug}/output"
+    project_root = f"projects/{project_slug}"
+    workspace_dir = os.path.join(project_root, "kdp_workspace")
+    output_dir = os.path.join(project_root, "output")
     os.makedirs(output_dir, exist_ok=True)
     pdf_path = os.path.join(output_dir, "Cover.pdf")
 
-    # カバー要素CSVを動的探索
+    # カバー要素CSVを動적探索
     csv_files = [f for f in os.listdir(workspace_dir) if f.endswith("_cover_elements.csv")]
-    title_main = "静寂の草花"
-    title_sub = "日本のミニマル植物塗り絵"
+    title_main = "Tranquil Flora"
+    title_sub = "A Japanese Minimalist Botanical Coloring Book"
     author_name = "Hiroyoshi Matsui"
     
     if csv_files:
@@ -30,9 +31,9 @@ def generate_cover_pdf(project_slug="01_tranquil_flora"):
         with open(cover_csv_path, mode="r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                if "title" in row: title_main = row["title"]
-                if "subtitle" in row: title_sub = row["subtitle"]
-                if "author" in row: author_name = row["author"]
+                if "title" in row and row["title"]: title_main = row["title"]
+                if "subtitle" in row and row["subtitle"]: title_sub = row["subtitle"]
+                if "author" in row and row["author"]: author_name = row["author"]
 
     c = canvas.Canvas(pdf_path, pagesize=(total_width, total_height))
 
@@ -48,27 +49,28 @@ def generate_cover_pdf(project_slug="01_tranquil_flora"):
     safe_margin_pt = 9.6 / 25.4 * 72
     
     c.setFillColor(colors.HexColor("#2C2C2C"))
-    c.setFont("Helvetica-Bold", 18)
+    c.setFont("Helvetica-Bold", 16)
     c.drawCentredString(front_x + (trim_w / 2), total_height - 180, title_main)
     
-    c.setFont("Helvetica", 10)
+    c.setFont("Helvetica", 9)
     c.setFillColor(colors.HexColor("#666666"))
     c.drawCentredString(front_x + (trim_w / 2), total_height - 210, title_sub)
     
-    c.setFont("Helvetica-Oblique", 10)
+    c.setFont("Helvetica-Oblique", 9)
     c.drawCentredString(front_x + (trim_w / 2), bleed + safe_margin_pt + 20, author_name)
 
-    # 3. 背表紙
-    if spine_width > 25:
+    # 3. 背表紙（英語圏標準：欧文の横書き・回転配置）
+    if spine_width > 20:
         c.saveState()
         c.translate(spine_x + (spine_width / 2), total_height / 2)
-        c.rotate(90)
-        c.setFont("Helvetica-Bold", 8)
+        c.rotate(90) # 欧米標準の背表紙の文字流れ
+        c.setFont("Helvetica-Bold", 7)
         c.setFillColor(colors.HexColor("#333333"))
-        c.drawCentredString(0, 0, f"{title_main} - {author_name}")
+        spine_text = f"{title_main}   /   {author_name}"
+        c.drawCentredString(0, 0, spine_text)
         c.restoreState()
 
-    # 4. 裏表紙：KDP無料ISBN用ホワイトボックス（右下固定・5大鉄則準拠）
+    # 4. 裏表紙：KDP無料ISBN用ホワイトボックス（右下固定）
     barcode_w = 2.0 * 72
     barcode_h = 1.2 * 72
     barcode_x = back_x + bleed + trim_w - barcode_w - (9.6 / 25.4 * 72)
