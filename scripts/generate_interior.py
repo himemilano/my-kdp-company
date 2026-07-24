@@ -36,49 +36,52 @@ class KDPPrintedCanvas(canvas.Canvas):
         self.restoreState()
 
 def generate_interior_pdf():
-    print("🎨 [KDP出版部] 内装PDFレイアウトエンジン起動中（厳格チェック体制）...")
+    print("🎨 [KDP出版部] 内装PDFレイアウトエンジン起動中（事前チェック優先・個別プロジェクト保存）...")
 
-    # 1. 設定のロードと厳格なバリデーション
+    # 1. 設定のロード
     config_path = "config.yml"
     config = {}
     if os.path.exists(config_path):
         with open(config_path, "r", encoding="utf-8") as f:
             config = yaml.safe_load(f) or {}
-    else:
-        raise FileNotFoundError("❌ 必須設定ファイル 'config.yml' が存在しません。")
 
     genre = config.get("genre_layouts", {}).get("coloring_book", {})
     min_pages = genre.get("min_pages", 24)
 
-    workspace_dir = "kdp_workspace"
-    active_proj_path = "active_project.json"
-    if os.path.exists(active_proj_path):
-        with open(active_proj_path, "r", encoding="utf-8") as f:
-            project_info = json.load(f)
-        workspace_dir = os.path.join(project_info.get("project_root", "projects/01_tranquil_flora"), "kdp_workspace")
+    # 2. プロジェクトごとのパス解決
+    project_slug = config.get("project", {}).get("name", "01_tranquil_flora")
+    project_root = f"projects/{project_slug}"
+    workspace_dir = os.path.join(project_root, "kdp_workspace")
+    output_dir = os.path.join(project_root, "output") # プロジェクト別出力先
+    assets_dir = os.path.join(project_root, "assets") # プロジェクト別アセット格納先（ルートの assets もフォールバック確認）
 
-    output_dir = "output"
     os.makedirs(workspace_dir, exist_ok=True)
     os.makedirs(output_dir, exist_ok=True)
-    
+    os.makedirs(assets_dir, exist_ok=True)
+
     interior_pdf_path = os.path.join(output_dir, "Interior.pdf")
 
-    # 2. アセットのロードとチェック体制の稼働
-    assets_dir = "assets"
+    # 3. 【順序修正】PDF生成の前にアセットの厳格チェックを行う
     image_files = []
-    if os.path.exists(assets_dir):
-        image_files = sorted([
-            os.path.join(assets_dir, f) for f in os.listdir(assets_dir)
-            if f.lower().endswith(('.png', '.jpg', '.jpeg'))
-        ])
-    
+    search_dirs = [assets_dir, "assets"] # プロジェクト内またはルートのassets
+    for d in search_dirs:
+        if os.path.exists(d):
+            found = sorted([
+                os.path.join(d, f) for f in os.listdir(d)
+                if f.lower().endswith(('.png', '.jpg', '.jpeg'))
+            ])
+            if found:
+                image_files = found
+                break
+
     print(f"📂 検出されたアセット画像数: {len(image_files)} 枚")
     
-    # 厳格チェック：アセットが0枚の場合、そのまま通さずに警告を出しつつプレースホルダーで堅牢に出力するか、要件チェックを通す
     if len(image_files) == 0:
-        print("⚠️ 【警告・チェック体制】有効なアセット画像が検出されませんでした。プレースホルダーフレームで内装PDFを構築します。")
+        print(f"❌ 【厳格チェックエラー】有効なアセット画像が {assets_dir}（または assets/）に存在しません。")
+        print("💡 対策: 塗り絵の線画画像をプロジェクトのアセットフォルダに配置してください。空のPDF生成を中断します。")
+        raise FileNotFoundError("有効な画像アセットが見つからないため、内装PDFの生成を中断しました。")
 
-    # 3. KDP寸法計算
+    # 4. KDP寸法計算とPDF構築
     pt_per_inch = 72
     bleed_pt = 0.125 * pt_per_inch
     trim_width = 8.5 * pt_per_inch
@@ -115,21 +118,8 @@ def generate_interior_pdf():
             
             if image_index < len(image_files):
                 img_path = image_files[image_index]
-                try:
-                    c.drawImage(img_path, x_pos, y_pos, width=frame_width, height=frame_height, preserveAspectRatio=True, anchor='c')
-                    image_index += 1
-                except Exception as e:
-                    print(f"⚠️ 画像読み込みエラー ({img_path}): {e}")
-                    c.setStrokeColor(colors.black)
-                    c.rect(x_pos, y_pos, frame_width, frame_height)
-                    c.drawCentredString(bx + (trim_width / 2), by + (trim_height / 2), "[ Image Load Error ]")
-            else:
-                c.setStrokeColor(colors.black)
-                c.setLineWidth(1)
-                c.rect(x_pos, y_pos, frame_width, frame_height)
-                c.setFont("Helvetica", 9)
-                c.setFillColor(colors.HexColor("#666666"))
-                c.drawCentredString(bx + (trim_width / 2), by + (trim_height / 2), "[ AI Line Art Illustration Frame (Awaiting Asset) ]")
+                c.drawImage(img_path, x_pos, y_pos, width=frame_width, height=frame_height, preserveAspectRatio=True, anchor='c')
+                image_index += 1
 
         c.showPage()
 
