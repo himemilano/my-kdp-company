@@ -1,4 +1,3 @@
-
 # Pinterest × Amazon US アフィリエイト戦略 (Pinterest x Amazon US Affiliate Strategy)
 
 本書は、1投稿が数年にわたりトラフィックを生み出し続ける「検索エンジン型プラットフォーム」であるPinterestを活用し、Amazon US市場におけるKDP書籍およびアフィリエイト収益の最大化を図るための戦略的ガイドラインである。
