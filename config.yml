@@ -1,0 +1,19 @@
+# config.yml
+project_defaults:
+  trim_size_inches: [8.5, 11.0] # KDP標準USレター判型
+  margin_inches: 0.5           # 安全余白
+
+genre_layouts:
+  coloring_book:
+    description: "大人向け塗り絵本（裏写り防止レイアウト）"
+    even_page_type: "text"     # 偶数ページ（左）：タイトル、解説、塗る時のヒント
+    odd_page_type: "image"     # 奇数ページ（右）：AI生成の線画イラスト
+    min_pages: 24
+  workbook:
+    description: "知育・学習帳（見開き両面ワーク構成）"
+    spread_sync: true
+    min_pages: 24
+  photo_book:
+    description: "AI写真集（北欧風景×抽象アート等）"
+    layout: "full_bleed"
+    min_pages: 40
