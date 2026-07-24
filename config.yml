@@ -3,6 +3,9 @@ project_defaults:
   trim_size_inches: [8.5, 11.0] # KDP標準USレター判型
   margin_inches: 0.5           # 安全余白
 
+api_settings:
+  model_name: "gemini-2.5-flash"
+
 genre_layouts:
   coloring_book:
     description: "大人向け塗り絵本（裏写り防止レイアウト）"
