@@ -1,5 +1,5 @@
 import os
-import json
+import csv
 import yaml
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -35,53 +35,29 @@ class KDPPrintedCanvas(canvas.Canvas):
             self.drawRightString(width_pt - 54, 36, page_text)
         self.restoreState()
 
-def generate_interior_pdf():
-    print("🎨 [KDP出版部] 内装PDFレイアウトエンジン起動中（事前チェック優先・個別プロジェクト保存）...")
+def generate_interior_pdf(project_slug="01_tranquil_flora"):
+    print(f"🎨 [KDP汎用エンジン] プロジェクト '{project_slug}' の内装PDFを構築中...")
 
-    # 1. 設定のロード
-    config_path = "config.yml"
-    config = {}
-    if os.path.exists(config_path):
-        with open(config_path, "r", encoding="utf-8") as f:
-            config = yaml.safe_load(f) or {}
-
-    genre = config.get("genre_layouts", {}).get("coloring_book", {})
-    min_pages = genre.get("min_pages", 24)
-
-    # 2. プロジェクトごとのパス解決
-    project_slug = config.get("project", {}).get("name", "01_tranquil_flora")
     project_root = f"projects/{project_slug}"
     workspace_dir = os.path.join(project_root, "kdp_workspace")
-    output_dir = os.path.join(project_root, "output") # プロジェクト別出力先
-    assets_dir = os.path.join(project_root, "assets") # プロジェクト別アセット格納先（ルートの assets もフォールバック確認）
-
-    os.makedirs(workspace_dir, exist_ok=True)
+    output_dir = os.path.join(project_root, "output")
     os.makedirs(output_dir, exist_ok=True)
-    os.makedirs(assets_dir, exist_ok=True)
 
     interior_pdf_path = os.path.join(output_dir, "Interior.pdf")
 
-    # 3. 【順序修正】PDF生成の前にアセットの厳格チェックを行う
-    image_files = []
-    search_dirs = [assets_dir, "assets"] # プロジェクト内またはルートのassets
-    for d in search_dirs:
-        if os.path.exists(d):
-            found = sorted([
-                os.path.join(d, f) for f in os.listdir(d)
-                if f.lower().endswith(('.png', '.jpg', '.jpeg'))
-            ])
-            if found:
-                image_files = found
-                break
+    # プロジェクト固有の本文CSVを動的探索
+    csv_files = [f for f in os.listdir(workspace_dir) if f.endswith("_body_bulk_create.csv")]
+    body_data = []
+    if csv_files:
+        csv_path = os.path.join(workspace_dir, csv_files[0])
+        with open(csv_path, mode="r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                body_data.append(row)
+        print(f"📂 本文CSV ({csv_files[0]}) から {len(body_data)} 件のデータをロードしました。")
 
-    print(f"📂 検出されたアセット画像数: {len(image_files)} 枚")
-    
-    if len(image_files) == 0:
-        print(f"❌ 【厳格チェックエラー】有効なアセット画像が {assets_dir}（または assets/）に存在しません。")
-        print("💡 対策: 塗り絵の線画画像をプロジェクトのアセットフォルダに配置してください。空のPDF生成を中断します。")
-        raise FileNotFoundError("有効な画像アセットが見つからないため、内装PDFの生成を中断しました。")
+    total_pages = 60 # 基本はマニフェスト・CSV連動（今回は60ページ）[span_1](start_span)[span_1](end_span)
 
-    # 4. KDP寸法計算とPDF構築
     pt_per_inch = 72
     bleed_pt = 0.125 * pt_per_inch
     trim_width = 8.5 * pt_per_inch
@@ -91,17 +67,27 @@ def generate_interior_pdf():
 
     c = KDPPrintedCanvas(interior_pdf_path, pagesize=(total_width, total_height))
 
-    image_index = 0
-    for page_num in range(1, min_pages + 1):
+    csv_index = 0
+    for page_num in range(1, total_pages + 1):
         bx = bleed_pt
         by = bleed_pt
 
         if page_num % 2 == 0:
+            title_text = f"Notes - Page {page_num}"
+            desc_text = "Project Layout Content"
+            
+            if csv_index < len(body_data):
+                row = body_data[csv_index]
+                title_text = row.get("title", title_text)
+                desc_text = row.get("description", desc_text)
+                csv_index += 1
+
             c.setFont("Helvetica-Bold", 12)
             c.setFillColor(colors.HexColor("#333333"))
-            c.drawString(bx + 36, by + trim_height - 54, f"Coloring Notes & Palette - Page {page_num}")
+            c.drawString(bx + 36, by + trim_height - 54, title_text)
             c.setFont("Helvetica", 10)
-            c.drawString(bx + 36, by + trim_height - 80, "Use this page for testing markers or recording color combinations.")
+            c.drawString(bx + 36, by + trim_height - 80, desc_text)
+            
             c.setStrokeColor(colors.HexColor("#CCCCCC"))
             c.setLineWidth(0.5)
             c.rect(bx + 36, by + 54, trim_width - 72, trim_height - 120)
@@ -116,16 +102,16 @@ def generate_interior_pdf():
             x_pos = bx + margin
             y_pos = by + 45
             
-            if image_index < len(image_files):
-                img_path = image_files[image_index]
-                c.drawImage(img_path, x_pos, y_pos, width=frame_width, height=frame_height, preserveAspectRatio=True, anchor='c')
-                image_index += 1
+            c.setStrokeColor(colors.black)
+            c.setLineWidth(1)
+            c.rect(x_pos, y_pos, frame_width, frame_height)
+            
+            c.setFont("Helvetica", 9)
+            c.setFillColor(colors.HexColor("#666666"))
+            c.drawCentredString(bx + (trim_width / 2), by + (trim_height / 2), "[ Line Art Asset Frame ]")
 
         c.showPage()
 
     c.save()
     print(f"✅ 内装PDFの生成が完了しました: {interior_pdf_path}")
     return interior_pdf_path
-
-if __name__ == "__main__":
-    generate_interior_pdf()
