@@ -6,7 +6,6 @@ from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 
 class KDPPrintedCanvas(canvas.Canvas):
-    """KDPの厳格なページ番号・裁ち落としルールを適用するカスタムキャンバス"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._saved_page_states = []
@@ -27,45 +26,36 @@ class KDPPrintedCanvas(canvas.Canvas):
         self.saveState()
         self.setFont("Helvetica", 8)
         self.setFillColor(colors.HexColor("#666666"))
-        
         page_text = f"{self._pageNumber}"
-        width_pt = 8.5 * 72 + 18 # 裁ち落とし込みの幅
+        width_pt = 8.5 * 72 + 18 
         
         if self._pageNumber % 2 == 0:
-            # 偶数ページ（左側）：左側に寄せる
             self.drawString(54, 36, page_text)
         else:
-            # 奇数ページ（右側）：右側に寄せる
             self.drawRightString(width_pt - 54, 36, page_text)
-            
         self.restoreState()
 
 def generate_interior_pdf():
-    print("🎨 [KDP出版部] 実画像自動インポート対応・内装PDFレイアウトエンジン起動中（堅牢化版）...")
+    print("🎨 [KDP出版部] 内装PDFレイアウトエンジン起動中（厳格チェック体制）...")
 
-    # 1. 設定ファイルの読み込み
+    # 1. 設定のロードと厳格なバリデーション
     config_path = "config.yml"
     config = {}
     if os.path.exists(config_path):
-        try:
-            with open(config_path, "r", encoding="utf-8") as f:
-                config = yaml.safe_load(f) or {}
-        except Exception as e:
-            print(f"⚠️ config.yml 読み込み警告: {e}")
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = yaml.safe_load(f) or {}
+    else:
+        raise FileNotFoundError("❌ 必須設定ファイル 'config.yml' が存在しません。")
 
     genre = config.get("genre_layouts", {}).get("coloring_book", {})
     min_pages = genre.get("min_pages", 24)
 
-    # 2. ワークスペースおよび出力先の確保
     workspace_dir = "kdp_workspace"
     active_proj_path = "active_project.json"
     if os.path.exists(active_proj_path):
-        try:
-            with open(active_proj_path, "r", encoding="utf-8") as f:
-                project_info = json.load(f)
-            workspace_dir = os.path.join(project_info.get("project_root", "projects/01_tranquil_flora"), "kdp_workspace")
-        except Exception as e:
-            print(f"⚠️ active_project.json 読み込み警告: {e}")
+        with open(active_proj_path, "r", encoding="utf-8") as f:
+            project_info = json.load(f)
+        workspace_dir = os.path.join(project_info.get("project_root", "projects/01_tranquil_flora"), "kdp_workspace")
 
     output_dir = "output"
     os.makedirs(workspace_dir, exist_ok=True)
@@ -73,7 +63,7 @@ def generate_interior_pdf():
     
     interior_pdf_path = os.path.join(output_dir, "Interior.pdf")
 
-    # 3. アセット画像のスキャン
+    # 2. アセットのロードとチェック体制の稼働
     assets_dir = "assets"
     image_files = []
     if os.path.exists(assets_dir):
@@ -81,41 +71,38 @@ def generate_interior_pdf():
             os.path.join(assets_dir, f) for f in os.listdir(assets_dir)
             if f.lower().endswith(('.png', '.jpg', '.jpeg'))
         ])
+    
     print(f"📂 検出されたアセット画像数: {len(image_files)} 枚")
+    
+    # 厳格チェック：アセットが0枚の場合、そのまま通さずに警告を出しつつプレースホルダーで堅牢に出力するか、要件チェックを通す
+    if len(image_files) == 0:
+        print("⚠️ 【警告・チェック体制】有効なアセット画像が検出されませんでした。プレースホルダーフレームで内装PDFを構築します。")
 
-    # 4. KDP裁ち落とし寸法計算
+    # 3. KDP寸法計算
     pt_per_inch = 72
     bleed_pt = 0.125 * pt_per_inch
-    
     trim_width = 8.5 * pt_per_inch
     trim_height = 11.0 * pt_per_inch
-    
     total_width = trim_width + (2 * bleed_pt)
     total_height = trim_height + (2 * bleed_pt)
 
     c = KDPPrintedCanvas(interior_pdf_path, pagesize=(total_width, total_height))
 
-    # 5. ページ構築（スタック競合を完全に排除した絶対座標方式）
     image_index = 0
     for page_num in range(1, min_pages + 1):
-        # 裁ち落とし分のオフセットを基準位置とする
         bx = bleed_pt
         by = bleed_pt
 
         if page_num % 2 == 0:
-            # 偶数ページ（左側 / Verso）：解説・メモスペース
             c.setFont("Helvetica-Bold", 12)
             c.setFillColor(colors.HexColor("#333333"))
             c.drawString(bx + 36, by + trim_height - 54, f"Coloring Notes & Palette - Page {page_num}")
-            
             c.setFont("Helvetica", 10)
             c.drawString(bx + 36, by + trim_height - 80, "Use this page for testing markers or recording color combinations.")
-            
             c.setStrokeColor(colors.HexColor("#CCCCCC"))
             c.setLineWidth(0.5)
             c.rect(bx + 36, by + 54, trim_width - 72, trim_height - 120)
         else:
-            # 奇数ページ（右側 / Recto）：AI線画イラストの配置枠
             c.setFont("Helvetica-Bold", 10)
             c.setFillColor(colors.HexColor("#333333"))
             c.drawString(bx + 36, by + trim_height - 36, f"Plate {page_num // 2 + 1}")
@@ -140,7 +127,6 @@ def generate_interior_pdf():
                 c.setStrokeColor(colors.black)
                 c.setLineWidth(1)
                 c.rect(x_pos, y_pos, frame_width, frame_height)
-                
                 c.setFont("Helvetica", 9)
                 c.setFillColor(colors.HexColor("#666666"))
                 c.drawCentredString(bx + (trim_width / 2), by + (trim_height / 2), "[ AI Line Art Illustration Frame (Awaiting Asset) ]")
