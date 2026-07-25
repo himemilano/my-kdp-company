@@ -17,13 +17,12 @@ def register_multilingual_fonts():
         "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
         "/usr/share/fonts/truetype/ipafont/ipag.ttf",
         "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf",
-        "C:/Windows/Fonts/msgothic.ttc"  # Windowsローカル開発用フォント
+        "C:/Windows/Fonts/msgothic.ttc"
     ]
     
     for path in font_candidates:
         if os.path.exists(path):
             try:
-                # TTCまたはTTFを安全に登録
                 sub_index = 0 if path.endswith('.ttc') else 0
                 pdfmetrics.registerFont(TTFont('UnicodeFont', path, subfontIndex=sub_index))
                 print(f"   ℹ️ 多言語対応フォントを正常にロードしました: {path}")
@@ -34,12 +33,11 @@ def register_multilingual_fonts():
     return 'Helvetica'
 
 def generate_interior_pdf(project_slug):
-    print("🎨 [DTP Engine] 多言語対応・アスペクト比維持・全60ページ厳密構造化のインナー構築を開始...")
+    print("🎨 [DTP Engine] 多言語対応・フレーム最適化・全60ページ厳密構造化のインナー構築を開始...")
     
     knowledge = load_organization_knowledge()
     print(f"   ℹ️ 適用デザイン原則: {knowledge.get('design_principles')}")
 
-    # フォントの動的登録（日本語・スペイン語の混在対応）
     active_font = register_multilingual_fonts()
 
     project_root = f"projects/{project_slug}"
@@ -106,7 +104,7 @@ def generate_interior_pdf(project_slug):
     story.append(Paragraph("By Hiroyoshi Matsui", subtitle_style))
     add_page_break()
     
-    # P4: まえがき (Mindfulness Note)
+    # P4: まえがき
     story.append(Paragraph("<b>A Note on Mindful Coloring / 塗り絵に寄せて</b>", title_style))
     story.append(Spacer(1, 15))
     story.append(Paragraph(
@@ -133,10 +131,9 @@ def generate_interior_pdf(project_slug):
         story.append(Paragraph(chapter_title, title_style))
         add_page_break()
         
-        # プレート（表面：塗り絵（幅指定のみで縦横比100%維持）、裏面：裏写り防止ブランク）
+        # プレート（表面：塗り絵 / フレーム内に完全に収まるよう幅を5.5インチに最適化）
         for asset_path in chapter_assets:
-            # widthのみ指定し、heightは自動計算させることで歪みを完全に防止
-            img = Image(asset_path, width=6.2 * inch)
+            img = Image(asset_path, width=5.5 * inch)
             img.hAlign = 'CENTER'
             story.append(img)
             add_page_break()
@@ -172,7 +169,7 @@ def generate_interior_pdf(project_slug):
     story.append(Paragraph("", body_style))
     add_page_break()
 
-    # P59-60: コロフォン（奥付・発行情報）
+    # P59-60: コロフォン（発行情報）
     story.append(Spacer(1, 2 * inch))
     story.append(Paragraph("<b>Colophon / 発行情報</b>", title_style))
     story.append(Spacer(1, 15))
@@ -181,4 +178,4 @@ def generate_interior_pdf(project_slug):
 
     # ビルド実行
     doc.build(story)
-    print(f"✅ 歪みなし・多言語対応・厳密に全60ページで構築されたインナーPDFが完成しました: {pdf_path}")
+    print(f"✅ フレームに完全に収まる厳密に全60ページのインナーPDFが完成しました: {pdf_path}")
