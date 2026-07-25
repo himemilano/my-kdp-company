@@ -28,9 +28,8 @@ def draw_botanical_plate(d, cx, cy, plate_type, index):
         px = cx + math.cos(angle) * (radius * 0.5)
         py = cy + math.sin(angle) * (radius * 0.5)
         
-        # 花びらの輪郭
-        petal = Path(fillColor=colors.white, strokeColor=colors.HexColor("#1A1A1A"), strokeWidth=0.7)
-        petal.circle(px, py, radius * 0.4)
+        # 花びらの輪郭（Circleクラスを直接図面に追加するよう修正）
+        petal = Circle(px, py, radius * 0.4, fillColor=colors.white, strokeColor=colors.HexColor("#1A1A1A"), strokeWidth=0.7)
         d.add(petal)
         
         # 花びら内の繊細な葉脈・スジ
