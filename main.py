@@ -2,52 +2,38 @@ import os
 import json
 import sys
 from scripts.knowledge_loader import load_organization_knowledge
-from scripts.agent_asset import run_asset_agent
+from scripts.agent_asset import generate_all_assets
+from scripts.generate_interior import generate_interior_pdf
 from scripts.agent_qa import run_qa_agent
-# 必要に応じて他のエージェントもインポート
-# from scripts.agent_planner import run_planner_agent
-# from scripts.generate_interior import generate_interior_pdf
-# from scripts.generate_cover import generate_cover_pdf
 
 def load_active_project():
     if not os.path.exists("active_project.json"):
-        return "01_tranquil_flora"  # デフォルト
+        return "01_tranquil_flora"
     with open("active_project.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-        return data.get("active_project", "01_tranquil_flora")
+        return json.load(f).get("active_project", "01_tranquil_flora")
 
 def main():
     project_slug = load_active_project()
-    print(f"[2026-07-25] 🚀 KDP自律進化組織 パイプライン起動: [{project_slug}]")
+    print(f"🚀 KDP最高品質自律生成パイプライン起動 [プロジェクト: {project_slug}]")
     
-    # 組織のKnowledgeを最初にロード・確認
+    # Knowledgeのロード
     knowledge = load_organization_knowledge()
-    print(f"🧠 Knowledgeロード完了。過去の教訓と品質基準を適用します。")
+    print("🧠 組織のKnowledgeおよび美的基準のロード完了。")
 
     try:
-        # [1/5] 企画・戦略ステップ（必要に応じて実行）
-        print("📋 [1/5] 企画・戦略確認中...")
+        # [1] アセット生成（自己批判付き）
+        generate_all_assets(project_slug)
         
-        # [2/5] テキスト・CSVステップ
-        print("📝 [2/5] テキスト・CSV処理確認中...")
+        # [2] DTPインナーPDF構築（前付け、章扉、全プレート、裏面ブランクの完全構造化）
+        generate_interior_pdf(project_slug)
         
-        # [3/5] 視覚線画アセット生成 ＋ 自己批判
-        print("🌿 [3/5] 視覚線画アセット生成エージェント稼働中（自己批判機能付き）...")
-        run_asset_agent(project_slug)
-        
-        # [4/5] PDFビルドステップ（Interior / Cover）
-        print("🎨 [4/5] PDFビルドエージェント稼働中...")
-        # generate_interior_pdf(project_slug)
-        # generate_cover_pdf(project_slug)
-        
-        # [5/5] 最終品質検証（QA Gatekeeper）による厳格な合否判定
-        print("🔍 [5/5] 品質検証・自己進化エージェント稼働中（QA Gate）...")
+        # [3] 最終品質検証（QA Gatekeeper）
         run_qa_agent(project_slug)
         
-        print("✅ すべてのプロセスが厳格な品質基準をクリアして正常終了しました。")
+        print("✅ 全ての工程が妥協なく完了しました。北米Amazon KDP向け出版データが完成しています。")
 
     except Exception as e:
-        print(f"❌ 【パイプライン中断】品質基準未達またはエラーが発生しました: {e}", file=sys.stderr)
+        print(f"❌ 【パイプライン緊急停止】品質基準未達またはエラーを検知しました: {e}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":
