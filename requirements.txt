@@ -3,4 +3,4 @@ reportlab
 PyYAML
 Pillow
 rlpycairo
-pip install pypdf
+pypdf
