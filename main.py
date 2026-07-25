@@ -1,39 +1,36 @@
-import os
-import json
 import sys
+import os
+
+# scriptsディレクトリを確実にパスに追加
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from scripts.knowledge_loader import load_organization_knowledge
 from scripts.agent_asset import generate_all_assets
 from scripts.generate_interior import generate_interior_pdf
 from scripts.agent_qa import run_qa_agent
 
-def load_active_project():
-    if not os.path.exists("active_project.json"):
-        return "01_tranquil_flora"
-    with open("active_project.json", "r", encoding="utf-8") as f:
-        return json.load(f).get("active_project", "01_tranquil_flora")
-
 def main():
-    project_slug = load_active_project()
+    project_slug = "01_tranquil_flora"
     print(f"🚀 KDP最高品質自律生成パイプライン起動 [プロジェクト: {project_slug}]")
     
-    # Knowledgeのロード
-    knowledge = load_organization_knowledge()
-    print("🧠 組織のKnowledgeおよび美的基準のロード完了。")
-
     try:
-        # [1] アセット生成（自己批判付き）
+        # 1. 組織のKnowledgeおよび美的基準のロード
+        knowledge = load_organization_knowledge()
+        print("🧠 組織のKnowledgeおよび美的基準のロード完了。")
+
+        # 2. アセットエージェントによる線画生成
         generate_all_assets(project_slug)
-        
-        # [2] DTPインナーPDF構築（前付け、章扉、全プレート、裏面ブランクの完全構造化）
+
+        # 3. DTPエンジンによる全60ページインナー構築
         generate_interior_pdf(project_slug)
-        
-        # [3] 最終品質検証（QA Gatekeeper）
+
+        # 4. QAゲートキーパーによる厳格検証
         run_qa_agent(project_slug)
-        
-        print("✅ 全ての工程が妥協なく完了しました。北米Amazon KDP向け出版データが完成しています。")
+
+        print("✨ すべてのプロセスが正常に完了しました。KDP出版データの生成に成功しました。")
 
     except Exception as e:
-        print(f"❌ 【パイプライン緊急停止】品質基準未達またはエラーを検知しました: {e}", file=sys.stderr)
+        print(f"\n❌ 【パイプライン緊急停止】品質基準未達またはエラーを検知しました: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
