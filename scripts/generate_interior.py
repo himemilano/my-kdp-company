@@ -124,7 +124,9 @@ def generate_interior_pdf(project_slug):
         add_page_break()
         
         for asset_path in chapter_assets:
-            img = Image(asset_path, width=5.0 * inch)
+            # 高さを 6.8 インチ（フレーム限界 672 pt 以内）に厳格に固定しつつ、
+            # 縦長アスペクト比を維持して自動計算させることで、美しい縦長デザインを安全に実現
+            img = Image(asset_path, height=6.8 * inch)
             img.hAlign = 'CENTER'
             story.append(img)
             add_page_break()
