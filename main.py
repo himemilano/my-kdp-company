@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 from datetime import datetime
 
 def log_message(msg):
@@ -19,10 +20,39 @@ def update_lessons_learned(project_slug, status, notes):
         with open(lessons_path, "w", encoding="utf-8") as f:
             f.write(f"# Organization Lessons Learned & Self-Improvement Log\n{log_entry}")
 
+def get_active_project():
+    # 1. コマンドライン引数があれば優先
+    if len(sys.argv) > 1:
+        return sys.argv[1]
+    
+    # 2. active_project.json から現在のプロジェクトを読み込む
+    active_json_path = "active_project.json"
+    if os.path.exists(active_json_path):
+        try:
+            with open(active_json_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if "project_slug" in data:
+                    return data["project_slug"]
+        except Exception as e:
+            print(f"Warning: Failed to read active_project.json: {e}")
+            
+    # 3. フォールバック
+    return "02_zen_mindful_patterns"
+
 def main():
-    project_slug = sys.argv[1] if len(sys.argv) > 1 else "02_zen_mindful_patterns"
+    project_slug = get_active_project()
     
     log_message(f"🚀 KDP自律進化組織 パイプライン起動: [{project_slug}]")
+
+    # active_project.json の内容を確実に同期・更新してGitに差分を生ませる
+    active_data = {
+        "project_root": f"projects/{project_slug}",
+        "project_slug": project_slug,
+        "title": "Tranquil Flora: A Japanese Minimalist Botanical Coloring Book for Adults" if project_slug == "01_tranquil_flora" else f"Project {project_slug}",
+        "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    with open("active_project.json", "w", encoding="utf-8") as f:
+        json.dump(active_data, f, indent=2, ensure_ascii=False)
 
     project_root = f"projects/{project_slug}"
     os.makedirs(os.path.join(project_root, "kdp_workspace"), exist_ok=True)
