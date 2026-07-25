@@ -31,6 +31,12 @@ jobs:
         env:
           GEMINI_API_KEY_MY_KDP: ${{ secrets.GEMINI_API_KEY_MY_KDP }}
 
+      - name: Force add and check generated files
+        run: |
+          echo "=== 🔍 Checking generated files ==="
+          find projects/ -type f
+          git status
+
       - name: Commit and push generated PDFs and workspace files
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
