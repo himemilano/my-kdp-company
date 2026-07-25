@@ -35,14 +35,14 @@ def draw_specific_botanical_plate(d, cx, cy, spec):
     # 1. ページフレーム（極細の二重枠線：余白65%以上のネガティブスペースを厳守）
     d.add(Path(strokeColor=colors.HexColor("#2C2C2C"), strokeWidth=0.5, fillColor=None))
     
-    # 2. 固有の方向に伸びる優美な茎・枝の曲線
+    # 2. 固有の方向に伸びる優美な茎・枝の曲線（direction変数として分離し、dの競合を防止）
     stem = Path(fillColor=None, strokeColor=colors.HexColor("#1A1A1A"), strokeWidth=0.8)
-    d = spec["stem_curve"]
+    direction = spec["stem_curve"]
     stem.moveTo(cx, cy - 240)
-    stem.curveTo(cx + (80 * d), cy - 80, cx - (60 * d), cy + 100, cx, cy + 250)
-    d.add(stem) if hasattr(d, 'add') else None # 安全なパス追加
+    stem.curveTo(cx + (80 * direction), cy - 80, cx - (60 * direction), cy + 100, cx, cy + 250)
+    d.add(stem)
 
-    # 3. 固有の花弁数と半径に基づく有機的描画
+    # 3. 固有の花弁数と半径に基づく有機적描画
     petals_count = spec["petals"]
     radius = spec["radius"]
 
@@ -51,7 +51,7 @@ def draw_specific_botanical_plate(d, cx, cy, spec):
         px = cx + math.cos(angle) * (radius * 0.5)
         py = cy + math.sin(angle) * (radius * 0.5)
         
-        # 独立した円による花びら（幾何学的図形ではなく自然な重なり）
+        # 独立した円による花びら
         petal = Circle(px, py, radius * 0.4, fillColor=colors.white, strokeColor=colors.HexColor("#1A1A1A"), strokeWidth=0.7)
         d.add(petal)
         
@@ -70,7 +70,7 @@ def generate_all_assets(project_slug):
     
     cx, cy = 300, 400
     
-    # ループによるごまかしを完全に排除し、マスター仕様の全20要素を1対1で具現化
+    # マスター仕様の全20要素を1対1で具現化
     for plate_id, spec in BOTANICAL_MASTER_SPEC.items():
         asset_path = os.path.join(assets_dir, f"plate_{plate_id:02d}.png")
         d = Drawing(600, 850)
