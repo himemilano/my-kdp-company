@@ -32,8 +32,8 @@ def draw_specific_botanical_plate(d, cx, cy, spec):
     
     stem = Path(fillColor=None, strokeColor=colors.HexColor("#1A1A1A"), strokeWidth=0.8)
     direction = spec["stem_curve"]
-    stem.moveTo(cx, cy - 240)
-    stem.curveTo(cx + (80 * direction), cy - 80, cx - (60 * direction), cy + 100, cx, cy + 250)
+    stem.moveTo(cx, cy - 220)
+    stem.curveTo(cx + (75 * direction), cy - 70, cx - (55 * direction), cy + 90, cx, cy + 230)
     d.add(stem)
 
     petals_count = spec["petals"]
@@ -57,11 +57,12 @@ def generate_all_assets(project_slug):
     assets_dir = os.path.join(project_root, "assets")
     os.makedirs(assets_dir, exist_ok=True)
     
-    cx, cy = 300, 400
+    # 縦長のアスペクト比（600 x 840 ≒ 1:1.4）に設定し、レターサイズに美しくフィットさせる
+    cx, cy = 300, 420
     
     for plate_id, spec in BOTANICAL_MASTER_SPEC.items():
         asset_path = os.path.join(assets_dir, f"plate_{plate_id:02d}.png")
-        d = Drawing(600, 850)
+        d = Drawing(600, 840)
         draw_specific_botanical_plate(d, cx, cy, spec)
         renderPM.drawToFile(d, asset_path, fmt='PNG', dpi=300)
         
