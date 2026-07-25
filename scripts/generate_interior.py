@@ -11,10 +11,12 @@ from scripts.knowledge_loader import load_organization_knowledge
 def register_multilingual_fonts():
     """
     Ubuntu環境およびローカル環境の日本語・多言語フォントを自動探索し、
-    ReportLabに登録する。スペイン語や日本語の混在による文字化けを防ぐ。
+    ReportLabに登録する。パスの候補を拡充。
     """
     font_candidates = [
         "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansJP-Regular.otf",
         "/usr/share/fonts/truetype/ipafont/ipag.ttf",
         "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf",
         "C:/Windows/Fonts/msgothic.ttc"
@@ -33,7 +35,7 @@ def register_multilingual_fonts():
     return 'Helvetica'
 
 def generate_interior_pdf(project_slug):
-    print("🎨 [DTP Engine] 多言語対応・フレーム最適化・全60ページ厳密構造化のインナー構築を開始...")
+    print("🎨 [DTP Engine] 多言語対応・フレーム厳格収容・全60ページ構造化のインナー構築を開始...")
     
     knowledge = load_organization_knowledge()
     print(f"   ℹ️ 適用デザイン原則: {knowledge.get('design_principles')}")
@@ -79,14 +81,12 @@ def generate_interior_pdf(project_slug):
         story.append(PageBreak())
 
     # --- 【前付け / Front Matter (計8ページ)】 ---
-    # P1: 半扉
     story.append(Spacer(1, 2.5 * inch))
     story.append(Paragraph("TRANQUIL FLORA", title_style))
     story.append(Spacer(1, 10))
     story.append(Paragraph("Jardín Botánico Sereno", subtitle_style))
     add_page_break()
     
-    # P2: 著作権・奥付
     story.append(Spacer(1, 3.5 * inch))
     story.append(Paragraph("<b>Tranquil Flora: A Mindful Botanical Coloring Journey</b>", body_style))
     story.append(Spacer(1, 10))
@@ -95,7 +95,6 @@ def generate_interior_pdf(project_slug):
     story.append(Paragraph("Published independently via Amazon KDP.<br/>Creado bajo estrictos principios de estética Wabi-Sabi.", body_style))
     add_page_break()
     
-    # P3: 本扉
     story.append(Spacer(1, 2 * inch))
     story.append(Paragraph("TRANQUIL FLORA", title_style))
     story.append(Spacer(1, 15))
@@ -104,7 +103,6 @@ def generate_interior_pdf(project_slug):
     story.append(Paragraph("By Hiroyoshi Matsui", subtitle_style))
     add_page_break()
     
-    # P4: まえがき
     story.append(Paragraph("<b>A Note on Mindful Coloring / 塗り絵に寄せて</b>", title_style))
     story.append(Spacer(1, 15))
     story.append(Paragraph(
@@ -126,14 +124,13 @@ def generate_interior_pdf(project_slug):
     ]
     
     for chapter_title, chapter_assets in chapters:
-        # 章扉
         story.append(Spacer(1, 3.2 * inch))
         story.append(Paragraph(chapter_title, title_style))
         add_page_break()
         
-        # プレート（表面：塗り絵 / フレーム内に完全に収まるよう幅を5.5インチに最適化）
+        # プレート（表面：高さ 6.0 インチ以内に強制収縮させ、フレーム超過エラーを完全に防止）
         for asset_path in chapter_assets:
-            img = Image(asset_path, width=5.5 * inch)
+            img = Image(asset_path, height=6.0 * inch, preserveAspectRatio=True)
             img.hAlign = 'CENTER'
             story.append(img)
             add_page_break()
@@ -142,7 +139,6 @@ def generate_interior_pdf(project_slug):
             add_page_break()
 
     # --- 【後付け / Back Matter (計8ページ：全60ページ完結)】 ---
-    # P53-54: スケッチ・メモ用ページ
     story.append(Spacer(1, 2 * inch))
     story.append(Paragraph("<b>Notes & Color Palettes / カラーパレットとメモ</b>", title_style))
     story.append(Spacer(1, 15))
@@ -151,7 +147,6 @@ def generate_interior_pdf(project_slug):
     story.append(Paragraph("", body_style))
     add_page_break()
 
-    # P55-56: 著者について
     story.append(Spacer(1, 2 * inch))
     story.append(Paragraph("<b>About the Author / 著者について</b>", title_style))
     story.append(Spacer(1, 15))
@@ -160,7 +155,6 @@ def generate_interior_pdf(project_slug):
     story.append(Paragraph("", body_style))
     add_page_break()
 
-    # P57-58: 読者への謝辞
     story.append(Spacer(1, 2 * inch))
     story.append(Paragraph("<b>Acknowledgment / 謝辞</b>", title_style))
     story.append(Spacer(1, 15))
@@ -169,7 +163,6 @@ def generate_interior_pdf(project_slug):
     story.append(Paragraph("", body_style))
     add_page_break()
 
-    # P59-60: コロフォン（発行情報）
     story.append(Spacer(1, 2 * inch))
     story.append(Paragraph("<b>Colophon / 発行情報</b>", title_style))
     story.append(Spacer(1, 15))
