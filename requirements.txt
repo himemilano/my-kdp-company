@@ -2,3 +2,4 @@ google-genai
 reportlab
 PyYAML
 Pillow
+rlpycairo
