@@ -1,125 +1,123 @@
 import os
-import csv
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
+import glob
+from reportlab.lib.pagesizes import inch
 from reportlab.lib import colors
-
-class KDPPrintedCanvas(canvas.Canvas):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._saved_page_states = []
-
-    def showPage(self):
-        self._saved_page_states.append(dict(self.__dict__))
-        self._startPage()
-
-    def save(self):
-        num_pages = len(self._saved_page_states)
-        for state in self._saved_page_states:
-            self.__dict__.update(state)
-            self.draw_kdp_footer(num_pages)
-            super().showPage()
-        super().save()
-
-    def draw_kdp_footer(self, page_count):
-        self.saveState()
-        self.setFont("Helvetica", 8)
-        self.setFillColor(colors.HexColor("#666666"))
-        page_text = f"{self._pageNumber}"
-        width_pt = 8.5 * 72 + 18 
-        
-        if self._pageNumber % 2 == 0:
-            self.drawString(54, 36, page_text)
-        else:
-            self.drawRightString(width_pt - 54, 36, page_text)
-        self.restoreState()
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak, Image, KeepTogether
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 def generate_interior_pdf(project_slug):
-    print(f"🎨 [KDP汎用エンジン] プロジェクト '{project_slug}' の完成版内装PDFを構築中...")
-
+    print("🎨 [DTP Engine] 全60ページの書籍インナー（Interior.pdf）の構築を開始...")
     project_root = f"projects/{project_slug}"
-    workspace_dir = os.path.join(project_root, "kdp_workspace")
-    assets_dir = os.path.join(project_root, "assets")
     output_dir = os.path.join(project_root, "output")
     os.makedirs(output_dir, exist_ok=True)
+    
+    pdf_path = os.path.join(output_dir, "Interior.pdf")
+    
+    # KDP標準サイズ（8.5 x 11 インチ / レターサイズ、マージン考慮）
+    doc = SimpleDocTemplate(
+        pdf_path,
+        pagesize=(8.5 * inch, 11 * inch),
+        leftMargin=0.75 * inch,
+        rightMargin=0.75 * inch,
+        topMargin=0.75 * inch,
+        bottomMargin=0.75 * inch
+    )
+    
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'BookTitle',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=28,
+        leading=34,
+        alignment=1, # 中央揃え
+        textColor=colors.HexColor("#1A1A1A")
+    )
+    
+    subtitle_style = ParagraphStyle(
+        'BookSubtitle',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=14,
+        leading=18,
+        alignment=1,
+        textColor=colors.HexColor("#555555")
+    )
+    
+    body_style = ParagraphStyle(
+        'BodyMain',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=10,
+        leading=15,
+        textColor=colors.HexColor("#333333")
+    )
 
-    interior_pdf_path = os.path.join(output_dir, "Interior.pdf")
+    story = []
+    
+    # --- 【前付け / Front Matter】 ---
+    # P1: 半扉（Half Title）
+    story.append(Spacer(1, 2 * inch))
+    story.append(Paragraph("QUIET BLOOMS OF JAPAN", subtitle_style))
+    story.append(PageBreak())
+    
+    # P2: 権利表記 / 著作権ページ (Copyright Page)
+    story.append(Spacer(1, 4 * inch))
+    story.append(Paragraph("<b>Quiet Blooms of Japan: A Mindful Botanical Coloring Journey</b>", body_style))
+    story.append(Spacer(1, 10))
+    story.append(Paragraph("Copyright © 2026 Hiroyoshi Matsui. All rights reserved.", body_style))
+    story.append(Spacer(1, 10))
+    story.append(Paragraph("Published independently via Amazon KDP.<br/>No part of this publication may be reproduced without prior permission.", body_style))
+    story.append(PageBreak())
+    
+    # P3: 本扉（Title Page）
+    story.append(Spacer(1, 2 * inch))
+    story.append(Paragraph("QUIET BLOOMS OF JAPAN", title_style))
+    story.append(Spacer(1, 15))
+    story.append(Paragraph("A Mindful Botanical Coloring Journey Inspired by Wabi-Sabi Aesthetics", subtitle_style))
+    story.append(Spacer(1, 30))
+    story.append(Paragraph("By Hiroyoshi Matsui", body_style))
+    story.append(PageBreak())
+    
+    # P4: まえがき / マインドフルネスについての解説 (Foreword)
+    story.append(Paragraph("<b>A Note on Mindful Coloring</b>", title_style))
+    story.append(Spacer(1, 15))
+    story.append(Paragraph(
+        "Welcome to a sanctuary of calm. In the fast-paced modern world, 'Quiet Blooms of Japan' invites you "
+        "to pause, breathe, and reconnect with the quiet elegance of nature. Rooted in the Japanese aesthetics of "
+        "<i>Wabi-Sabi</i> (finding beauty in imperfection) and <i>Yugen</i> (profound grace), each page is designed with "
+        "generous negative space to let your mind wander and unwind.", body_style
+    ))
+    story.append(PageBreak())
 
-    csv_files = [f for f in os.listdir(workspace_dir) if f.endswith("_body_bulk_create.csv")]
-    body_data = []
-    if csv_files:
-        csv_path = os.path.join(workspace_dir, csv_files[0])
-        with open(csv_path, mode="r", encoding="utf-8") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                body_data.append(row)
-
-    total_pages = max(60, len(body_data) * 2) if body_data else 60
-
-    pt_per_inch = 72
-    bleed_pt = 0.125 * pt_per_inch
-    trim_width = 8.5 * pt_per_inch
-    trim_height = 11.0 * pt_per_inch
-    total_width = trim_width + (2 * bleed_pt)
-    total_height = trim_height + (2 * bleed_pt)
-
-    c = KDPPrintedCanvas(interior_pdf_path, pagesize=(total_width, total_height))
-
-    csv_index = 0
-    plate_counter = 0
-
-    for page_num in range(1, total_pages + 1):
-        bx = bleed_pt
-        by = bleed_pt
-
-        if page_num % 2 == 0:
-            title_text = f"Notes - Page {page_num}"
-            desc_text = "Project Layout Content"
+    # --- 【本文セクション / Body Matter (全60ページ構成への展開)】 ---
+    assets_dir = os.path.join(project_root, "assets")
+    assets = sorted(glob.glob(os.path.join(assets_dir, "*.png")))
+    
+    chapters = [
+        ("CHAPTER I: SPRING AWAKENING", assets[0:5]),
+        ("CHAPTER II: SUMMER SERENITY", assets[5:10]),
+        ("CHAPTER III: AUTUMN WHISPERS", assets[10:15]),
+        ("CHAPTER IV: WINTER STILLNESS", assets[15:20])
+    ]
+    
+    for chapter_title, chapter_assets in chapters:
+        # 章扉 (Chapter Divider Page)
+        story.append(Spacer(1, 3 * inch))
+        story.append(Paragraph(chapter_title, title_style))
+        story.append(PageBreak())
+        
+        # 各章のプレート（塗り絵ページと、裏面の裏写り防止用ブランクページを交互に配置）
+        for asset_path in chapter_assets:
+            # 塗り絵ページ
+            img = Image(asset_path, width=6.5 * inch, height=9.0 * inch)
+            story.append(img)
+            story.append(PageBreak())
             
-            if csv_index < len(body_data):
-                row = body_data[csv_index]
-                title_text = row.get("title", title_text)
-                desc_text = row.get("description", desc_text)
-                csv_index += 1
+            # 裏面のブランクページ（片面印刷仕様により塗り絵の裏移りを防止）
+            story.append(Paragraph("", body_style))
+            story.append(PageBreak())
 
-            c.setFont("Helvetica-Bold", 12)
-            c.setFillColor(colors.HexColor("#333333"))
-            c.drawString(bx + 36, by + trim_height - 54, title_text)
-            
-            c.setFont("Helvetica", 10)
-            c.setFillColor(colors.HexColor("#555555"))
-            c.drawString(bx + 36, by + trim_height - 80, desc_text[:80])
-            
-            c.setStrokeColor(colors.HexColor("#DDDDDD"))
-            c.setLineWidth(0.5)
-            c.rect(bx + 36, by + 54, trim_width - 72, trim_height - 120)
-        else:
-            plate_counter += 1
-            c.setFont("Helvetica-Bold", 10)
-            c.setFillColor(colors.HexColor("#333333"))
-            c.drawString(bx + 36, by + trim_height - 36, f"Plate {plate_counter}")
-            
-            margin = 36 
-            frame_width = trim_width - (2 * margin)
-            frame_height = trim_height - 90
-            x_pos = bx + margin
-            y_pos = by + 45
-            
-            asset_filename = f"plate_{plate_counter:02d}.png"
-            asset_path = os.path.join(assets_dir, asset_filename)
-            
-            if os.path.exists(asset_path):
-                c.drawImage(asset_path, x_pos, y_pos, width=frame_width, height=frame_height, preserveAspectRatio=True, anchor='c')
-            else:
-                c.setStrokeColor(colors.black)
-                c.setLineWidth(1)
-                c.rect(x_pos, y_pos, frame_width, frame_height)
-                c.setFont("Helvetica", 9)
-                c.setFillColor(colors.HexColor("#666666"))
-                c.drawCentredString(x_pos + (frame_width / 2), y_pos + (frame_height / 2), "[ Image Asset Missing ]")
-
-        c.showPage()
-
-    c.save()
-    print(f"✅ 完成版内装PDFの生成が完了しました: {interior_pdf_path}")
-    return interior_pdf_path
+    # PDFのビルド実行
+    doc.build(story)
+    print(f"✅ 完全な書籍インナーPDFが構築されました: {pdf_path}")
