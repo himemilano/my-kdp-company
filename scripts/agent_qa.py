@@ -1,5 +1,4 @@
 import os
-import pypdf # または PyPDF2
 from scripts.knowledge_loader import load_organization_knowledge
 
 def run_qa_agent(project_slug):
@@ -13,22 +12,21 @@ def run_qa_agent(project_slug):
     if not os.path.exists(interior_pdf):
         raise RuntimeError("【QA不合格】Interior.pdf が存在しません。パイプラインを中断します。")
         
-    # PDFの総ページ数を厳密に検証
+    # pypdfによるページ数検証（インポートエラー時も安全にフォールバックしてクラッシュを防ぐ）
     try:
+        import pypdf
         reader = pypdf.PdfReader(interior_pdf)
         total_pages = len(reader.pages)
         print(f"   - 検出されたPDF総ページ数: {total_pages} ページ")
         
         if total_pages != 60:
             raise RuntimeError(f"【QA不合格】仕様書が要求する総ページ数は「60ページ」ですが、生成されたPDFは「{total_pages}ページ」です。")
-    except Exception as e:
-        if "60" not in str(e):
-            # pypdfが入っていない等の環境要因の場合のフォールバックチェック
-            pdf_size = os.path.getsize(interior_pdf)
-            if pdf_size < 500 * 1024:
-                raise RuntimeError(f"【QA不合格】PDF構造の検証に失敗、またはファイルサイズが小さすぎます（{pdf_size} bytes）")
+    except ImportError:
+        print("   ⚠️ 警告: pypdfライブラリが見つからないため、ファイルサイズ検証にフォールバックします。")
+        pdf_size = os.path.getsize(interior_pdf)
+        if pdf_size < 500 * 1024:
+            raise RuntimeError(f"【QA不合格】PDFファイルサイズが小さすぎます（{pdf_size} bytes）")
 
-    # アセット枚数チェック
     assets = os.listdir(assets_dir)
     if len(assets) < 20:
         raise RuntimeError(f"【QA不合格】ボタニカルプレートの枚数が不足しています（現在: {len(assets)}枚 / 要求: 20枚）")
