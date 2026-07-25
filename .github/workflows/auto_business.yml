@@ -31,11 +31,13 @@ jobs:
         env:
           GEMINI_API_KEY_MY_KDP: ${{ secrets.GEMINI_API_KEY_MY_KDP }}
 
-      - name: Commit and push generated PDFs
+      - name: Commit and push generated PDFs and workspace files
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "✨ Auto-generated project KDP PDFs via GitHub Actions [skip ci]"
+          commit_message: "✨ Auto-generated project KDP assets and PDFs via GitHub Actions [skip ci]"
+          add_options: "-A"
           file_pattern: |
             active_project.json
             projects/**/output/*.pdf
             projects/**/kdp_workspace/*
+            projects/**/assets/*
