@@ -9,10 +9,6 @@ from reportlab.pdfbase.ttfonts import TTFont
 from scripts.knowledge_loader import load_organization_knowledge
 
 def register_multilingual_fonts():
-    """
-    Ubuntu環境およびローカル環境の日本語・多言語フォントを自動探索し、
-    ReportLabに登録する。パスの候補を拡充。
-    """
     font_candidates = [
         "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
         "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
@@ -29,7 +25,7 @@ def register_multilingual_fonts():
                 pdfmetrics.registerFont(TTFont('UnicodeFont', path, subfontIndex=sub_index))
                 print(f"   ℹ️ 多言語対応フォントを正常にロードしました: {path}")
                 return 'UnicodeFont'
-            except Exception as e:
+            except Exception:
                 continue
     print("   ⚠️ 警告: 専用の多言語フォントが見つかりません。標準フォントにフォールバックします。")
     return 'Helvetica'
@@ -48,7 +44,6 @@ def generate_interior_pdf(project_slug):
     
     pdf_path = os.path.join(output_dir, "Interior.pdf")
     
-    # 8.5 x 11 インチ（KDPレターサイズ）
     doc = SimpleDocTemplate(
         pdf_path,
         pagesize=(8.5 * inch, 11 * inch),
@@ -80,7 +75,7 @@ def generate_interior_pdf(project_slug):
     def add_page_break():
         story.append(PageBreak())
 
-    # --- 【前付け / Front Matter (計8ページ)】 ---
+    # --- 前付け (8ページ) ---
     story.append(Spacer(1, 2.5 * inch))
     story.append(Paragraph("TRANQUIL FLORA", title_style))
     story.append(Spacer(1, 10))
@@ -112,7 +107,7 @@ def generate_interior_pdf(project_slug):
     ))
     add_page_break()
 
-    # --- 【本文セクション / Body Matter (全44ページ：4章×各5作品＋章扉)】 ---
+    # --- 本文 (44ページ) ---
     assets_dir = os.path.join(project_root, "assets")
     assets = sorted(glob.glob(os.path.join(assets_dir, "*.png")))
     
@@ -128,17 +123,15 @@ def generate_interior_pdf(project_slug):
         story.append(Paragraph(chapter_title, title_style))
         add_page_break()
         
-        # プレート（表面：高さ 6.0 インチ以内に強制収縮させ、フレーム超過エラーを完全に防止）
         for asset_path in chapter_assets:
-            img = Image(asset_path, height=6.0 * inch, preserveAspectRatio=True)
+            img = Image(asset_path, width=5.0 * inch)
             img.hAlign = 'CENTER'
             story.append(img)
             add_page_break()
-            
-            story.append(Paragraph("", body_style)) # 裏面ブランク
+            story.append(Paragraph("", body_style))
             add_page_break()
 
-    # --- 【後付け / Back Matter (計8ページ：全60ページ完結)】 ---
+    # --- 後付け (8ページ) ---
     story.append(Spacer(1, 2 * inch))
     story.append(Paragraph("<b>Notes & Color Palettes / カラーパレットとメモ</b>", title_style))
     story.append(Spacer(1, 15))
@@ -169,6 +162,5 @@ def generate_interior_pdf(project_slug):
     story.append(Paragraph("First Edition - Printed via Amazon KDP.<br/>Designed with ReportLab DTP Engine under strict quality control.", body_style))
     story.append(PageBreak())
 
-    # ビルド実行
     doc.build(story)
     print(f"✅ フレームに完全に収まる厳密に全60ページのインナーPDFが完成しました: {pdf_path}")
