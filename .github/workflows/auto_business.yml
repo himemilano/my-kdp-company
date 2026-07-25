@@ -31,20 +31,14 @@ jobs:
         env:
           GEMINI_API_KEY_MY_KDP: ${{ secrets.GEMINI_API_KEY_MY_KDP }}
 
-      - name: Commit and push all generated KDP assets & PDFs
+      - name: Commit and push all generated assets and PDFs securely
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          echo "=== 🔍 Checking status before add ==="
-          git status
-          
-          # すべての新規・変更ファイルを強制追加
+          # 仮想環境内で生成されたすべての変更・新規ファイルを完全捕捉
           git add -A
           
-          echo "=== 🔍 Checking status after add ==="
-          git status
-          
-          # 変更がある場合のみコミット＆プッシュ
+          # 変更がある場合のみ確実にコミット＆プッシュ
           git commit -m "✨ Auto-generated project KDP assets and PDFs via GitHub Actions [skip ci]" || echo "No changes to commit"
           git push
